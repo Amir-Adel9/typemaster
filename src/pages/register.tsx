@@ -124,8 +124,8 @@ const Home: NextPage = () => {
           <span
             className={
               isHovered
-                ? ' absolute bottom-[110%] left-[60%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in'
-                : ' absolute bottom-[110%] left-[60%] z-10 rounded bg-[#2fe691] p-1 opacity-0 duration-500'
+                ? 'absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in'
+                : 'absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 opacity-0 duration-500 ease-in'
             }
           >
             iLegit#3503
