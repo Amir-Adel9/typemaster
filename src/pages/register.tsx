@@ -17,6 +17,21 @@ const Home: NextPage = () => {
 
   const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
 
+  const [translationValues, setTranslationValues] = useState({
+    title: 96,
+    text: 900,
+    input: 1100,
+    button: 1200,
+    icons: 24,
+  });
+  const [buttonDurationHelper, setButtonDurationHelper] = useState(false);
+  useEffect(() => {
+    setTranslationValues({ title: 0, text: 0, input: 0, button: 0, icons: 0 });
+    setTimeout(() => {
+      setButtonDurationHelper(true);
+    }, 2000);
+  }, []);
+
   useEffect(() => {
     const storedName = localStorage.getItem('displayName') as string;
     if (registeredDisplayNames.data?.includes(storedName)) {
@@ -51,29 +66,41 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-[#111] via-[#111] to-[#3e0620]'>
-        <b className='  mt-36 bg-gradient-to-r from-[#2fe691] to-[#01b78a] bg-clip-text font-poppins text-9xl text-transparent'>
+        <b
+          className={`mt-36 -translate-y-${translationValues.title} bg-gradient-to-r from-[#2fe691] to-[#01b78a] bg-clip-text font-poppins text-9xl text-transparent duration-1000 ease-out`}
+        >
           Type Master
         </b>
         <form
           className='mt-48 flex flex-col items-center'
           onSubmit={submitHandler}
         >
-          <b className='block text-white'>Choose your display name</b>
+          <b
+            className={`block -translate-y-[${translationValues.text}px] text-white duration-[1500ms] ease-out`}
+          >
+            Choose your display name
+          </b>
           <b className='mt-3 block text-yellow-400'>{invalidNameMessage}</b>
           <input
             type='text'
-            className='mt-5 block'
+            className={`mt-5 block -translate-y-[${translationValues.input}px] duration-[1900ms] ease-out`}
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
           />
           <button
-            className='mt-5 w-28 rounded-md bg-[#2fe691] font-semibold text-white duration-300 ease-in hover:scale-110 hover:bg-[#3bb77d] hover:font-bold hover:text-white'
+            className={`mt-5 w-28 -translate-y-[${
+              translationValues.button
+            }px] rounded-md bg-[#2fe691] font-semibold text-white duration-[${
+              buttonDurationHelper ? 300 : 1800
+            }ms] ease-in hover:scale-110 hover:bg-[#3bb77d] hover:font-bold hover:text-white`}
             type='submit'
           >
             Confirm
           </button>
         </form>
-        <div className='mt-72 flex items-center'>
+        <div
+          className={`mt-72 flex translate-y-${translationValues.icons} items-center duration-1000 ease-out`}
+        >
           <Link
             href='https://github.com/Amir-Adel9/typemaster-plus'
             target='_blank'
@@ -97,8 +124,8 @@ const Home: NextPage = () => {
           <span
             className={
               isHovered
-                ? ' absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in'
-                : ' absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 opacity-0 duration-500'
+                ? ' absolute bottom-[110%] left-[60%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in'
+                : ' absolute bottom-[110%] left-[60%] z-10 rounded bg-[#2fe691] p-1 opacity-0 duration-500'
             }
           >
             iLegit#3503
@@ -113,7 +140,7 @@ const Home: NextPage = () => {
             onMouseOut={() => {
               setTimeout(() => {
                 setIsHovered(false);
-              }, 2000);
+              }, 2500);
             }}
           />
         </div>
