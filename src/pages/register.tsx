@@ -19,8 +19,8 @@ const Home: NextPage = () => {
   const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
-    const storedName = localStorage.getItem('displayName') || 'null';
-    if (registeredDisplayNames.data?.includes(storedName)) {
+    const storedName = localStorage.getItem('displayName');
+    if (registeredDisplayNames.data?.includes(storedName as string)) {
       router.push('/');
     }
   }, [registeredDisplayNames]);

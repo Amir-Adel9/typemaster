@@ -1,21 +1,30 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { router, publicProcedure } from "../trpc";
+import { router, publicProcedure } from '../trpc';
 
 export const userRouter = router({
   setDisplayName: publicProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
-      const name = await ctx.prisma.user.create({
+      const registeredNames = await ctx.prisma.user.findMany({
+        select: { displayName: true },
+      });
+      const filteredNames = registeredNames.map((name) => {
+        return name.displayName;
+      });
+      if (filteredNames.includes(input)) {
+        return;
+      }
+      const enteredName = await ctx.prisma.user.create({
         data: { displayName: input },
       });
-      return name;
+      return enteredName;
     }),
   getAllDisplayNames: publicProcedure.query(async ({ ctx }) => {
-    const names = await ctx.prisma.user.findMany({
+    const registeredNames = await ctx.prisma.user.findMany({
       select: { displayName: true },
     });
-    const filteredNames = names.map((name) => {
+    const filteredNames = registeredNames.map((name) => {
       return name.displayName;
     });
     return await filteredNames;
