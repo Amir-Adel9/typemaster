@@ -16,17 +16,26 @@ const Home: NextPage = () => {
 
   const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
 
-  const [displayName, setDisplayName] = useState('');
-
   useEffect(() => {
-    const storedName = localStorage.getItem('displayName');
-    if (registeredDisplayNames.data?.includes(storedName as string)) {
+    const storedName = localStorage.getItem('displayName') as string;
+    if (registeredDisplayNames.data?.includes(storedName)) {
       router.push('/');
     }
   }, [registeredDisplayNames]);
 
+  const [displayName, setDisplayName] = useState('');
+  const [invalidNameMessage, setInvalidNameMessage] = useState('');
+
   const submitHandler: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
+    if (!displayName) {
+      setInvalidNameMessage('Display name cannot be empty');
+      return;
+    }
+    if (displayName.length <= 2) {
+      setInvalidNameMessage('Display name must at least be 3 characters long');
+      return;
+    }
     localStorage.setItem('displayName', displayName);
     setDisplayNameMutation.mutate(displayName);
   };
@@ -43,8 +52,9 @@ const Home: NextPage = () => {
           Type Master
         </b>
         <div className='mt-36 flex flex-col items-center'>
-          <form className='flex flex-col' onSubmit={submitHandler}>
+          <form className='flex flex-col items-center' onSubmit={submitHandler}>
             <b className='block text-white'>Choose your display name</b>
+            <b className='mt-3 block text-yellow-400'>{invalidNameMessage}</b>
             <input
               type='text'
               className='mt-5 block'
@@ -52,7 +62,7 @@ const Home: NextPage = () => {
               onChange={(event) => setDisplayName(event.target.value)}
             />
             <button
-              className='mt-5 rounded-full bg-white duration-500 hover:bg-[#2fe691]'
+              className='mt-5 w-28 rounded-full bg-white duration-500 hover:bg-[#2fe691]'
               type='submit'
             >
               Confirm

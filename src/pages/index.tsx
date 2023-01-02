@@ -12,13 +12,13 @@ const Home: NextPage = () => {
   const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
-    const storedDisplayName = localStorage.getItem('displayName');
+    const storedDisplayName = localStorage.getItem('displayName') as string;
     const isRegistered = storedDisplayName ? true : false;
     if (!isRegistered) {
       router.push('/register');
       return;
     } else {
-      setDisplayName(storedDisplayName as string);
+      setDisplayName(storedDisplayName);
     }
   }, []);
 
