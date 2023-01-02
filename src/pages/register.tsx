@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -26,6 +27,8 @@ const Home: NextPage = () => {
   const [displayName, setDisplayName] = useState('');
   const [invalidNameMessage, setInvalidNameMessage] = useState('');
 
+  const [isHovered, setIsHovered] = useState(false);
+
   const submitHandler: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     if (!displayName) {
@@ -47,27 +50,72 @@ const Home: NextPage = () => {
         <meta name='description' content='Type Master by Amir Adel' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2c0416] via-[#3d041f] to-[#2e0b2e]'>
-        <b className='  mt-36 bg-gradient-to-r from-[#2fe691] to-[#01b78a] bg-clip-text font-poppins text-7xl text-transparent'>
+      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-[#111] via-[#111] to-[#3e0620]'>
+        <b className='  mt-36 bg-gradient-to-r from-[#2fe691] to-[#01b78a] bg-clip-text font-poppins text-9xl text-transparent'>
           Type Master
         </b>
-        <div className='mt-36 flex flex-col items-center'>
-          <form className='flex flex-col items-center' onSubmit={submitHandler}>
-            <b className='block text-white'>Choose your display name</b>
-            <b className='mt-3 block text-yellow-400'>{invalidNameMessage}</b>
-            <input
-              type='text'
-              className='mt-5 block'
-              value={displayName}
-              onChange={(event) => setDisplayName(event.target.value)}
+        <form
+          className='mt-48 flex flex-col items-center'
+          onSubmit={submitHandler}
+        >
+          <b className='block text-white'>Choose your display name</b>
+          <b className='mt-3 block text-yellow-400'>{invalidNameMessage}</b>
+          <input
+            type='text'
+            className='mt-5 block'
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
+          />
+          <button
+            className='mt-5 w-28 rounded-md bg-[#2fe691] font-semibold text-white duration-300 ease-in hover:scale-110 hover:bg-[#3bb77d] hover:font-bold hover:text-white'
+            type='submit'
+          >
+            Confirm
+          </button>
+        </form>
+        <div className='mt-72 flex items-center'>
+          <Link
+            href='https://github.com/Amir-Adel9/typemaster-plus'
+            target='_blank'
+          >
+            <img
+              src='../../github.svg'
+              alt='Github'
+              className='mr-7 scale-125 duration-200 hover:scale-150'
             />
-            <button
-              className='mt-5 w-28 rounded-full bg-white duration-500 hover:bg-[#2fe691]'
-              type='submit'
-            >
-              Confirm
-            </button>
-          </form>
+          </Link>
+          <Link
+            href='https://www.linkedin.com/in/amir-adel312/'
+            target='_blank'
+          >
+            <img
+              src='../../linkden.svg'
+              alt='Linkden'
+              className='mr-7 scale-125 duration-200 hover:scale-150'
+            />
+          </Link>
+          <span
+            className={
+              isHovered
+                ? ' absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in'
+                : ' absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 opacity-0 duration-500'
+            }
+          >
+            iLegit#3503
+          </span>
+          <img
+            src='../../discord.svg'
+            alt='Discord'
+            className='inline-block duration-200 hover:scale-[1.15]'
+            onMouseOver={() => {
+              setIsHovered(true);
+            }}
+            onMouseOut={() => {
+              setTimeout(() => {
+                setIsHovered(false);
+              }, 2000);
+            }}
+          />
         </div>
       </main>
     </>
