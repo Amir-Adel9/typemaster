@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "studio": "prisma studio",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
@@ -41,5 +42,9 @@
   },
   "ct3aMetadata": {
     "initVersion": "6.12.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "jsxSingleQuote": true
   }
 }
