@@ -10,6 +10,7 @@ import Link from 'next/link';
 import router from 'next/router';
 
 const Home: NextPage = () => {
+  const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
   const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
@@ -92,7 +93,9 @@ const Home: NextPage = () => {
     }, 500);
     return;
   };
+
   const [isOpen, setIsOpen] = useState(false);
+  console.log(isOpen);
   return (
     <>
       <Head>
@@ -106,13 +109,18 @@ const Home: NextPage = () => {
         } bg-[#222] duration-700 ease-in-out`}
       >
         <button
-          className='bg-red-500'
+          className='w-5 bg-red-500'
           onClick={() => {
             setIsOpen(false);
           }}
         >
           X
         </button>
+        <div className='mt-3 flex flex-col'>
+          {registeredDisplayNames.data?.map((name) => {
+            return <b key={name}>{name}</b>;
+          })}
+        </div>
       </div>
       <div
         className={`box-border min-h-screen translate-x-${
@@ -120,7 +128,7 @@ const Home: NextPage = () => {
         } bg-gradient-to-b from-[#111] via-[#111] to-[#3e0620] duration-500 ease-in-out`}
       >
         <header className='flex items-center justify-between font-mono text-lg font-bold'>
-          <button className='z-20'>
+          <button className=''>
             <img
               src='../../menu.svg'
               className='z-20 m-4 -scale-y-100'
