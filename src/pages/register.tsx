@@ -3,7 +3,7 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FormEventHandler, useEffect, useState } from 'react';
+import { FormEventHandler, useEffect, useRef, useState } from 'react';
 
 import { trpc } from '../utils/trpc';
 
@@ -17,18 +17,22 @@ const Home: NextPage = () => {
 
   const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
 
-  const [translationValues, setTranslationValues] = useState({
-    title: 96,
-    text: 900,
-    input: 1100,
-    button: 1200,
-    icons: 24,
-  });
-  const [buttonDurationHelper, setButtonDurationHelper] = useState(false);
+  const titleRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const iconsRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    setTranslationValues({ title: 0, text: 0, input: 0, button: 0, icons: 0 });
+    titleRef.current?.classList.remove('-translate-y-96');
+    textRef.current?.classList.remove('-translate-y-[900px]');
+    inputRef.current?.classList.remove('-translate-y-[1100px]');
+    buttonRef.current?.classList.remove('-translate-y-[1200px]');
+    iconsRef.current?.classList.remove('translate-y-24');
+
     setTimeout(() => {
-      setButtonDurationHelper(true);
+      buttonRef.current?.classList.remove('duration-[1800ms]');
+      buttonRef.current?.classList.add('duration-after');
     }, 2000);
   }, []);
 
@@ -65,67 +69,46 @@ const Home: NextPage = () => {
         <meta name='description' content='Type Master by Amir Adel' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-[#111] via-[#111] to-[#3e0620]'>
-        <b
-          className={`mt-36 -translate-y-${translationValues.title} bg-gradient-to-r from-[#2fe691] to-[#01b78a] bg-clip-text font-poppins text-9xl text-transparent duration-1000 ease-out`}
-        >
+      <main className='register'>
+        <b className='title -translate-y-96' ref={titleRef}>
           Type Master
         </b>
-        <form
-          className='mt-48 flex flex-col items-center'
-          onSubmit={submitHandler}
-        >
-          <b
-            className={`block -translate-y-[${translationValues.text}px] text-white duration-[1500ms] ease-out`}
-          >
+        <form className='reg-form' onSubmit={submitHandler}>
+          <b className='choose -translate-y-[900px]' ref={textRef}>
             Choose your display name
           </b>
-          <b className='mt-3 block text-yellow-400'>{invalidNameMessage}</b>
+          <b className='invalid'>{invalidNameMessage}</b>
           <input
             type='text'
-            className={`mt-5 block -translate-y-[${translationValues.input}px] duration-[1900ms] ease-out`}
+            className='reg-input -translate-y-[1100px]'
             value={displayName}
             onChange={(event) => setDisplayName(event.target.value)}
+            ref={inputRef}
           />
           <button
-            className={`mt-5 w-28 -translate-y-[${
-              translationValues.button
-            }px] rounded-md bg-[#2fe691] font-semibold text-white duration-[${
-              buttonDurationHelper ? 300 : 1800
-            }ms] ease-in hover:scale-110 hover:bg-[#3bb77d] hover:font-bold hover:text-white`}
+            className='confirm -translate-y-[1200px]'
             type='submit'
+            ref={buttonRef}
           >
             Confirm
           </button>
         </form>
-        <div
-          className={`mt-72 flex translate-y-${translationValues.icons} items-center duration-1000 ease-out`}
-        >
+        <div className='icons translate-y-24' ref={iconsRef}>
           <Link
             href='https://github.com/Amir-Adel9/typemaster-plus'
             target='_blank'
           >
-            <img
-              src='../../github.svg'
-              alt='Github'
-              className='mr-7 scale-125 duration-200 hover:scale-150'
-            />
+            <img src='../../github.svg' alt='Github' className='github ' />
           </Link>
           <Link
             href='https://www.linkedin.com/in/amir-adel312/'
             target='_blank'
           >
-            <img
-              src='../../linkden.svg'
-              alt='Linkden'
-              className='mr-7 scale-125 duration-200 hover:scale-150'
-            />
+            <img src='../../linkden.svg' alt='Linkden' className='linkden' />
           </Link>
           <span
             className={
-              isHovered
-                ? 'absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in'
-                : 'absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 opacity-0 duration-500 ease-in'
+              isHovered ? 'discord-tooltip' : 'discord-tooltip opacity-0'
             }
           >
             iLegit#3503
@@ -133,7 +116,7 @@ const Home: NextPage = () => {
           <img
             src='../../discord.svg'
             alt='Discord'
-            className='inline-block duration-200 hover:scale-[1.15]'
+            className='discord'
             onMouseOver={() => {
               setIsHovered(true);
             }}

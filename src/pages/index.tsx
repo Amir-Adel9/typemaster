@@ -95,7 +95,6 @@ const Home: NextPage = () => {
   };
 
   const [isOpen, setIsOpen] = useState(false);
-  console.log(isOpen);
   return (
     <>
       <Head>
@@ -142,7 +141,7 @@ const Home: NextPage = () => {
           <span className='absolute ml-24 text-[#2fe691]'>Type Master</span>
           <span className='text-[#2fe691]'>Welcome, {displayName}</span>
         </header>
-        <main className='flex flex-col items-center justify-center '>
+        <main className='flex flex-col items-center justify-center'>
           <div className='flex w-[70%] flex-col items-center justify-center gap-12 px-4 py-16 '>
             <b>{gameResult}</b>
             <div className='w-full bg-[#222] p-5 text-center'>
