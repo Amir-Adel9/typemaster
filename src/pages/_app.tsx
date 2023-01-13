@@ -4,6 +4,7 @@ import { trpc } from '../utils/trpc';
 
 import '../styles/globals.css';
 import '../styles/register.css';
+import '../styles/index.css';
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return <Component {...pageProps} />;

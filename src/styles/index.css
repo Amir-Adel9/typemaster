@@ -1,0 +1,43 @@
+.main {
+  @apply min-h-screen bg-gradient-to-b from-[#111] via-[#111] to-[#3e0620] duration-500 ease-in-out;
+}
+
+.header {
+  @apply flex items-center justify-between font-mono text-lg font-bold;
+}
+
+button img {
+  @apply z-20 m-4 -scale-y-100;
+}
+
+.header-title {
+  @apply absolute ml-24 text-[#2fe691];
+}
+
+.header-user {
+  @apply pr-10 text-[#2fe691];
+}
+
+.game-wrapper {
+  @apply flex flex-col items-center justify-center;
+}
+
+.game-body {
+  @apply flex w-[70%] flex-col items-center justify-center gap-4 px-4 py-16;
+}
+
+.game-info {
+  @apply w-full bg-[#222] p-5 text-center;
+}
+
+.the-word {
+  @apply select-none text-center font-mono text-7xl font-semibold text-[#2fe691];
+}
+
+.start-button {
+  @apply m-auto mt-5 block w-full rounded-md bg-[#d0196e] p-5 font-mono text-2xl font-bold duration-300 hover:scale-[1.04] hover:invert;
+}
+
+.words-box {
+  @apply m-auto mt-5 flex w-full flex-wrap justify-center rounded-lg bg-[#222] p-4 text-center font-poppins text-base font-medium text-white;
+}
