@@ -10,6 +10,7 @@ import Link from 'next/link';
 import router from 'next/router';
 
 import Sidebar from '../components/sidebar';
+import { useInterval } from '../utils/useInterval';
 
 const Home: NextPage = () => {
   const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
@@ -158,7 +159,7 @@ const Home: NextPage = () => {
             <input
               type='text'
               ref={inputRef}
-              className='w-full border'
+              className='game-input'
               onChange={handleInput}
             />
             <button className='start-button' onClick={gameStartHandler}>
@@ -184,6 +185,13 @@ const Home: NextPage = () => {
                 })
               )}
             </div>
+            <div className='game-state'>
+              <b>
+                Time Left: <span className='text-[#d0196e]'>{timeLeft}</span>{' '}
+                Seconds
+              </b>
+              <b>Score: </b>
+            </div>
           </div>
           <Link
             href='/register'
@@ -200,24 +208,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-function useInterval(callback: any, delay: any) {
-  const savedCallback = useRef(Function);
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      // eslint-disable-next-line prefer-const
-      let id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
