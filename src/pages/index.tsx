@@ -30,8 +30,8 @@ const Home: NextPage = () => {
   const { isLoading, refetch } = useQuery(
     ['randomWords'],
     () =>
-      fetch('https://random-word-api.herokuapp.com/word?number=5').then((res) =>
-        res.json()
+      fetch('https://random-word-api.herokuapp.com/word?number=15').then(
+        (res) => res.json()
       ),
     {
       refetchOnWindowFocus: false,
@@ -53,6 +53,7 @@ const Home: NextPage = () => {
 
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const wordRef = useRef() as React.MutableRefObject<HTMLDivElement>;
 
   const currentWordHandler = () => {
     const randomWord = words[
@@ -66,9 +67,19 @@ const Home: NextPage = () => {
 
   const handleInput = (event: FormEvent<HTMLInputElement>) => {
     if (event.currentTarget.value === currentWord) {
-      // inputRef.current.value = '';
-      // currentWordHandler();
-      // setCount((count) => count + 5);
+      inputRef.current.value = '';
+      if (!wordRef.current.classList.contains('the-word')) {
+        wordRef.current.classList.add('the-word');
+      }
+      if (words.length === 0) {
+        setIsPlaying(false);
+        setGameStarted(false);
+        setGameResult('You Won!');
+        refetch();
+        inputRef.current.value = '';
+      }
+      currentWordHandler();
+      setTimeLeft(5);
     }
   };
 
@@ -87,18 +98,7 @@ const Home: NextPage = () => {
         return;
       }
       setTimeLeft((timeLeft) => timeLeft - 1);
-      if (inputRef.current.value === currentWord) {
-        inputRef.current.value = '';
-        if (words.length === 0) {
-          setIsPlaying(false);
-          setGameStarted(false);
-          setGameResult('You Won!');
-          refetch();
-          inputRef.current.value = '';
-        }
-        currentWordHandler();
-        setTimeLeft(5);
-      }
+
       if (timeLeft === 1) {
         setIsPlaying(false);
         setGameStarted(false);
@@ -106,7 +106,6 @@ const Home: NextPage = () => {
         refetch();
         inputRef.current.value = '';
       }
-      console.log(timeLeft);
     },
     isPlaying ? 1000 : null
   );
@@ -155,7 +154,9 @@ const Home: NextPage = () => {
                 to type the word
               </b>
             </div>
-            <b className='the-word'>{currentWord}</b>
+            <b className='the-word' ref={wordRef}>
+              {currentWord}
+            </b>
             <input
               type='text'
               ref={inputRef}
@@ -165,6 +166,7 @@ const Home: NextPage = () => {
             <button className='start-button' onClick={gameStartHandler}>
               Start Playing
             </button>
+            <div>{gameResult}</div>
             <div className='words-box'>
               {isLoading ? (
                 'Loading...'
@@ -193,14 +195,6 @@ const Home: NextPage = () => {
               <b>Score: </b>
             </div>
           </div>
-          <Link
-            href='/register'
-            onClick={() => {
-              localStorage.clear();
-            }}
-          >
-            <p className='text-white hover:underline'>home</p>
-          </Link>
         </main>
       </div>
     </>
