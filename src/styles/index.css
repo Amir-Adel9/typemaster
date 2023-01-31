@@ -3,7 +3,7 @@
 }
 
 .header {
-  @apply flex w-full  items-center justify-between bg-[#d0196e] font-mono text-lg font-bold text-white;
+  @apply flex h-[4.5rem] w-[full] items-center justify-between bg-[#d0196e] font-mono text-lg font-bold text-white;
 }
 
 button img {
@@ -11,7 +11,7 @@ button img {
 }
 
 .header-title {
-  @apply absolute ml-24;
+  @apply absolute ml-24 duration-1000;
 }
 
 .header-user {

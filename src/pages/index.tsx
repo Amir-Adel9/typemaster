@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import router from 'next/router';
 
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/sidebar/sidebar';
 import { useInterval } from '../utils/useInterval';
 
 const Home: NextPage = () => {
@@ -40,8 +40,8 @@ const Home: NextPage = () => {
       },
     }
   );
-
   const userData = registeredDisplayNames.data?.map((name) => name);
+  const currentUserData = { displayName: displayName };
 
   const [words, setWords] = useState(['']);
   const [currentWord, setCurrentWord] = useState('');
@@ -54,6 +54,9 @@ const Home: NextPage = () => {
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const wordRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  const headerTitleRef = useRef<HTMLDivElement>(null);
+  const displayNameRef = useRef<HTMLDivElement>(null);
 
   const currentWordHandler = () => {
     const randomWord = words[
@@ -113,9 +116,21 @@ const Home: NextPage = () => {
   const [isShowing, setIsShowing] = useState(false);
 
   useEffect(() => {
-    isShowing
-      ? bodyRef.current?.classList.add('translate-x-36')
-      : bodyRef.current?.classList.remove('translate-x-36');
+    if (isShowing) {
+      bodyRef.current?.classList.add('translate-x-36');
+      headerTitleRef.current?.classList.add(
+        'xl:translate-x-[31rem]',
+        '2xl:translate-x-[51rem]'
+      );
+      displayNameRef.current?.classList.add('hidden');
+    } else {
+      bodyRef.current?.classList.remove('translate-x-36');
+      headerTitleRef.current?.classList.remove(
+        'xl:translate-x-[31rem]',
+        '2xl:translate-x-[51rem]'
+      );
+      displayNameRef.current?.classList.remove('hidden');
+    }
   }, [isShowing]);
 
   return (
@@ -129,6 +144,7 @@ const Home: NextPage = () => {
         isShowing={isShowing}
         isShowingHandler={setIsShowing}
         userData={userData}
+        currentUserData={currentUserData}
       />
       <div className={'main'} ref={bodyRef}>
         <header className='header'>
@@ -141,8 +157,12 @@ const Home: NextPage = () => {
               }}
             />
           </button>
-          <span className='header-title'>Type Master</span>
-          <span className='header-user'>Welcome, {displayName}</span>
+          <span className='header-title' ref={headerTitleRef}>
+            Type Master
+          </span>
+          <span className='header-user' ref={displayNameRef}>
+            Welcome, {displayName}
+          </span>
         </header>
         <main className='game-wrapper'>
           <div className='game-body'>
