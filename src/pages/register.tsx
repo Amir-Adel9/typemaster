@@ -38,7 +38,11 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     const storedName = localStorage.getItem('displayName') as string;
-    if (registeredDisplayNames.data?.includes(storedName)) {
+    if (
+      registeredDisplayNames.data?.includes(
+        storedName?.charAt(0).toUpperCase() + storedName?.slice(1)
+      )
+    ) {
       router.push('/');
     }
   }, [registeredDisplayNames]);

@@ -10,14 +10,19 @@ export const userRouter = router({
         select: { displayName: true },
       });
       const filteredNames = registeredNames.map((name) => {
-        return name.displayName;
+        return (
+          name.displayName.charAt(0).toUpperCase() + name.displayName.slice(1)
+        );
       });
-      if (filteredNames.includes(input)) {
+      if (
+        filteredNames.includes(input.charAt(0).toUpperCase() + input.slice(1))
+      ) {
         return;
       }
       const enteredName = await ctx.prisma.user.create({
-        data: { displayName: input },
+        data: { displayName: input.charAt(0).toUpperCase() + input.slice(1) },
       });
+      console.log(input.charAt(0).toUpperCase() + input.slice(1));
       return enteredName;
     }),
   getAllDisplayNames: publicProcedure.query(async ({ ctx }) => {
@@ -25,8 +30,10 @@ export const userRouter = router({
       select: { displayName: true },
     });
     const filteredNames = registeredNames.map((name) => {
-      return name.displayName;
+      return (
+        name.displayName.charAt(0).toUpperCase() + name.displayName.slice(1)
+      );
     });
-    return await filteredNames;
+    return filteredNames;
   }),
 });

@@ -11,6 +11,7 @@ import router from 'next/router';
 
 import Sidebar from '../components/sidebar/sidebar';
 import { useInterval } from '../utils/useInterval';
+import { list } from 'postcss';
 
 const Home: NextPage = () => {
   const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
@@ -23,16 +24,18 @@ const Home: NextPage = () => {
       router.push('/register');
       return;
     } else {
-      setDisplayName(storedDisplayName);
+      setDisplayName(
+        storedDisplayName.charAt(0).toUpperCase() + storedDisplayName.slice(1)
+      );
     }
   }, []);
 
   const { isLoading, refetch } = useQuery(
     ['randomWords'],
     () =>
-      fetch('https://random-word-api.herokuapp.com/word?number=15').then(
-        (res) => res.json()
-      ),
+      fetch(
+        `https://random-word-api.herokuapp.com/word?number=${difficulty?.wordCount}`
+      ).then((res) => res.json()),
     {
       refetchOnWindowFocus: false,
       onSuccess: (data) => {
@@ -40,13 +43,33 @@ const Home: NextPage = () => {
       },
     }
   );
+
+  const difficulties = [
+    {
+      timeLimit: 70,
+      wordCount: 15,
+    },
+    {
+      timeLimit: 50,
+      wordCount: 25,
+    },
+    {
+      timeLimit: 30,
+      wordCount: 30,
+    },
+  ];
+
   const userData = registeredDisplayNames.data?.map((name) => name);
   const currentUserData = { displayName: displayName };
 
+  const [difficulty, setDifficulty] = useState(difficulties[0]);
+
   const [words, setWords] = useState(['']);
   const [currentWord, setCurrentWord] = useState('');
-  const [timeLeft, setTimeLeft] = useState(5);
+  const [splittedCurrentWord, setSplittedCurrentWord] = useState(['']);
+  const [timeLeft, setTimeLeft] = useState(50);
   const [gameResult, setGameResult] = useState('');
+  const [score, setScore] = useState(0);
 
   const [gameStarted, setGameStarted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -54,44 +77,71 @@ const Home: NextPage = () => {
   const bodyRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const wordRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const startButtonRef = useRef<HTMLButtonElement>(null);
 
   const headerTitleRef = useRef<HTMLDivElement>(null);
   const displayNameRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    refetch();
+  }, [difficulty]);
 
   const currentWordHandler = () => {
     const randomWord = words[
       Math.floor(Math.random() * words.length)
     ] as string;
+    const splitedWord = randomWord?.split('');
     setCurrentWord(randomWord);
+    setSplittedCurrentWord(splitedWord);
     const wordIndex = words.indexOf(randomWord);
     words.splice(wordIndex, 1);
     return randomWord;
   };
 
+  const changeDifficultyHandler = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setDifficulty(difficulties[event.target.value as unknown as number]);
+  };
+
+  const getLetterColor = (idx: number) => {
+    if (!gameStarted) {
+      return 'text-[#2fe691]';
+    } else {
+      if (splittedCurrentWord[idx] === inputRef?.current?.value[idx]) {
+        return 'text-[#ecfd00]';
+      } else {
+        return 'text-[#2fe691]';
+      }
+    }
+  };
+
   const handleInput = (event: FormEvent<HTMLInputElement>) => {
     if (event.currentTarget.value === currentWord) {
       inputRef.current.value = '';
-      if (!wordRef.current.classList.contains('the-word')) {
-        wordRef.current.classList.add('the-word');
-      }
+      setScore((prevScore) => prevScore + 1);
       if (words.length === 0) {
         setIsPlaying(false);
         setGameStarted(false);
         setGameResult('You Won!');
         refetch();
         inputRef.current.value = '';
+        startButtonRef.current?.classList.remove('hidden');
       }
       currentWordHandler();
-      setTimeLeft(5);
+
+      setTimeLeft(difficulty?.timeLimit as number);
     }
   };
 
   const gameStartHandler = () => {
+    setScore(0);
     inputRef.current.value = '';
+    startButtonRef.current?.classList.add('hidden');
     setGameStarted(true);
     setIsPlaying(true);
     currentWordHandler();
-    setTimeLeft(5);
+    setTimeLeft(difficulty?.timeLimit as number);
     setGameResult('');
   };
 
@@ -100,6 +150,7 @@ const Home: NextPage = () => {
       if (!gameStarted) {
         return;
       }
+
       setTimeLeft((timeLeft) => timeLeft - 1);
 
       if (timeLeft === 1) {
@@ -108,9 +159,10 @@ const Home: NextPage = () => {
         setGameResult('You Lost');
         refetch();
         inputRef.current.value = '';
+        startButtonRef.current?.classList.remove('hidden');
       }
     },
-    isPlaying ? 1000 : null
+    isPlaying ? 100 : null
   );
 
   const [isShowing, setIsShowing] = useState(false);
@@ -146,7 +198,7 @@ const Home: NextPage = () => {
         userData={userData}
         currentUserData={currentUserData}
       />
-      <div className={'main'} ref={bodyRef}>
+      <div className={'main overflow-x-auto overflow-y-auto '} ref={bodyRef}>
         <header className='header'>
           <button>
             <img
@@ -169,24 +221,51 @@ const Home: NextPage = () => {
             <div className='game-info'>
               <b className=' text-white'>
                 You are playing on the{' '}
-                <span className='text-[#d0196e]'>[Easy]</span> difficulity & you
-                have <span className='text-[#d0196e]'>{timeLeft}</span> seconds
-                to type the word
+                <span className='text-[#d0196e]'>
+                  [
+                  <select
+                    className='mx-1 border-none bg-[#d0196e] font-poppins font-bold text-black outline-none'
+                    onChange={changeDifficultyHandler}
+                  >
+                    <option value='0'>Easy</option>
+                    <option value='1'>Normal</option>
+                    <option value='2'>Hard</option>
+                  </select>
+                  ]
+                </span>{' '}
+                difficulity & you have{' '}
+                <span className='text-[#d0196e]'>
+                  {gameStarted
+                    ? Math.trunc(timeLeft / 10)
+                    : Math.trunc((difficulty?.timeLimit as number) / 10)}
+                </span>{' '}
+                seconds to type the word
               </b>
             </div>
-            <b className='the-word' ref={wordRef}>
-              {currentWord}
+            <b
+              className='font-semibold; select-none text-center font-mono text-7xl'
+              ref={wordRef}
+            >
+              {splittedCurrentWord?.map((letter, idx) => (
+                <span key={idx} className={getLetterColor(idx)}>
+                  {letter}
+                </span>
+              ))}
             </b>
             <input
               type='text'
               ref={inputRef}
               className='game-input'
               onChange={handleInput}
+              disabled={!gameStarted ? true : false}
             />
-            <button className='start-button' onClick={gameStartHandler}>
+            <button
+              className='hover:invert; m-auto mt-5 block w-full rounded-md bg-[#d0196e] p-5 font-mono text-2xl font-bold duration-300 hover:scale-[1.04]'
+              onClick={gameStartHandler}
+              ref={startButtonRef}
+            >
               Start Playing
             </button>
-            <div>{gameResult}</div>
             <div className='words-box'>
               {isLoading ? (
                 'Loading...'
@@ -209,10 +288,19 @@ const Home: NextPage = () => {
             </div>
             <div className='game-state'>
               <b>
-                Time Left: <span className='text-[#d0196e]'>{timeLeft}</span>{' '}
+                Time Left:{' '}
+                <span className='text-[#d0196e]'>
+                  {gameStarted
+                    ? Math.trunc(timeLeft / 10)
+                    : Math.trunc((difficulty?.timeLimit as number) / 10)}
+                </span>{' '}
                 Seconds
               </b>
-              <b>Score: </b>
+              <b>{gameResult}</b>
+              <b>
+                Score: <b className='text-[#d0196e]'>{score}</b> from{' '}
+                <b className='text-[#d0196e]'>{difficulty?.wordCount}</b>
+              </b>
             </div>
           </div>
         </main>

@@ -37,6 +37,7 @@ const Sidebar = (props: SideBarProps) => {
         'w-1/3',
         'right-4'
       );
+      profilePictureRef.current?.classList.add('2xl:w-[25rem]');
       displayNameRef.current?.classList.remove('right-7');
       displayNameRef.current?.classList.add('ml-2');
     } else {
@@ -46,6 +47,7 @@ const Sidebar = (props: SideBarProps) => {
         'w-1/3',
         'right-4'
       );
+      profilePictureRef.current?.classList.remove('2xl:w-[25rem]');
       displayNameRef.current?.classList.remove('ml-2');
       displayNameRef.current?.classList.add('right-7');
     }
@@ -69,7 +71,7 @@ const Sidebar = (props: SideBarProps) => {
           <img
             src='../../favicon.ico'
             alt='profile'
-            className='relative right-4 inline w-1/3 scale-50 rounded-full duration-500'
+            className='sca relative right-4 inline w-1/3 scale-50 rounded-full duration-300 ease-in-out'
             ref={profilePictureRef}
           />
           <b className='relative right-7 text-white' ref={displayNameRef}>
@@ -88,7 +90,7 @@ const Sidebar = (props: SideBarProps) => {
           {selectedTab === 'leaderboard' ? (
             props.userData?.map((user) => {
               return (
-                <b key={user} className='border-b border-[#2fe691]'>
+                <b key={user} className='border-b-0 border-[#2fe691]'>
                   {user}
                 </b>
               );
