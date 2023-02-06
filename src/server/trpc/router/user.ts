@@ -36,4 +36,18 @@ export const userRouter = router({
     });
     return filteredNames;
   }),
+  getAllUsersData: publicProcedure.query(async ({ ctx }) => {
+    const usersData = await ctx.prisma.user.findMany({
+      select: { id: true, displayName: true, timesPlayed: true },
+    });
+    return usersData;
+  }),
+  increaseTimesPlayed: publicProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.user.update({
+        where: { id: input },
+        data: { timesPlayed: { increment: 1 } },
+      });
+    }),
 });

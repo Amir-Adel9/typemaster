@@ -13,7 +13,9 @@ interface SideBarProps {
   isShowing: boolean;
   isShowingHandler: Dispatch<SetStateAction<boolean>>;
   userData: string[] | undefined;
-  currentUserData: { displayName: string };
+  currentUserData:
+    | { id: string; displayName: string; timesPlayed: number }
+    | undefined;
 }
 
 const Sidebar = (props: SideBarProps) => {
@@ -58,7 +60,7 @@ const Sidebar = (props: SideBarProps) => {
       className='fixed z-10 h-full w-[20%] -translate-x-96 border-r-[1px] border-[#111] bg-[#111] duration-700 ease-in-out'
       ref={sideBarRef}
     >
-      <div className='flex w-full flex-col items-start border-b border-[#2fe691]'>
+      <div className='flex w-full flex-col items-start border-b border-[#2fe691] pb-3'>
         <button
           className='absolute left-[95%] z-10 text-white'
           onClick={() => {
@@ -71,11 +73,11 @@ const Sidebar = (props: SideBarProps) => {
           <img
             src='../../favicon.ico'
             alt='profile'
-            className='sca relative right-4 inline w-1/3 scale-50 rounded-full duration-300 ease-in-out'
+            className='relative right-4 inline w-1/3 scale-50 rounded-full duration-300 ease-in-out'
             ref={profilePictureRef}
           />
           <b className='relative right-7 text-white' ref={displayNameRef}>
-            {props.currentUserData.displayName}
+            {props.currentUserData?.displayName}
           </b>
         </div>
         <b className='ml-2 text-white'>Lvl.1</b>
@@ -83,6 +85,9 @@ const Sidebar = (props: SideBarProps) => {
           <div className='h-3 w-[45%] rounded-full bg-[#2fe691]  text-center text-xs font-medium leading-none'>
             45%
           </div>
+          <b className='relative text-white'>
+            Times Played: {props.currentUserData?.timesPlayed}
+          </b>
         </div>
       </div>
       <div>

@@ -6,15 +6,12 @@ import { trpc } from '../utils/trpc';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
-import Link from 'next/link';
 import router from 'next/router';
 
 import Sidebar from '../components/sidebar/sidebar';
 import { useInterval } from '../utils/useInterval';
-import { list } from 'postcss';
 
 const Home: NextPage = () => {
-  const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
   const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
@@ -44,6 +41,24 @@ const Home: NextPage = () => {
     }
   );
 
+  const ctx = trpc.useContext();
+
+  const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
+  const allUsersData = trpc.user.getAllUsersData.useQuery();
+  const currentUserData = allUsersData.data?.find((user) => {
+    if (user.displayName === displayName) {
+      return user.id;
+    }
+  });
+  console.log(currentUserData);
+
+  const increaseTimesPlayedMutation = trpc.user.increaseTimesPlayed.useMutation(
+    {
+      onSuccess: () => ctx.invalidate(),
+    }
+  );
+  const userData = registeredDisplayNames.data?.map((name) => name);
+
   const difficulties = [
     {
       timeLimit: 70,
@@ -58,9 +73,6 @@ const Home: NextPage = () => {
       wordCount: 30,
     },
   ];
-
-  const userData = registeredDisplayNames.data?.map((name) => name);
-  const currentUserData = { displayName: displayName };
 
   const [difficulty, setDifficulty] = useState(difficulties[0]);
 
@@ -135,6 +147,7 @@ const Home: NextPage = () => {
   };
 
   const gameStartHandler = () => {
+    increaseTimesPlayedMutation.mutate(currentUserData?.id as string);
     setScore(0);
     inputRef.current.value = '';
     startButtonRef.current?.classList.add('hidden');
