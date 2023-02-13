@@ -1,29 +1,31 @@
-.register {
-  @apply flex min-h-screen flex-col items-center bg-gradient-to-b from-[#111] via-[#111] to-[#3e0620];
-}
-
 .title {
-  @apply mt-36 bg-gradient-to-r from-[#2fe691] to-[#01b78a] bg-clip-text font-poppins text-9xl text-transparent duration-1000 ease-out;
+  -webkit-text-stroke: 1px var(--color-primary);
+  @apply stroke-primary text-[#111];
 }
 
-.reg-form {
-  @apply mt-48 flex flex-col items-center;
+.title::before {
+  content: 'Type\00a0Master';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  overflow: hidden;
+  animation: animate 5s linear infinite;
+
+  @apply border-r-primary text-primary;
 }
 
-.choose {
-  @apply text-white duration-[1500ms] ease-out;
-}
-
-.invalid {
-  @apply mt-3 text-yellow-400;
-}
-
-.reg-input {
-  @apply mt-5  duration-[1900ms] ease-out;
-}
-
-.confirm {
-  @apply mt-5 w-28 rounded-md bg-[#2fe691] font-semibold text-white duration-[1800ms] ease-in hover:scale-110 hover:bg-[#3bb77d] hover:font-bold;
+@keyframes animate {
+  0%,
+  10%,
+  100% {
+    width: 0;
+  }
+  70%,
+  90% {
+    width: 100%;
+  }
 }
 
 .duration-after {
@@ -31,18 +33,9 @@
 }
 
 .icons {
-  @apply mt-72 flex items-center duration-1000 ease-out;
-}
-
-.github,
-.linkden {
-  @apply mr-7 scale-125 duration-200 hover:scale-150;
-}
-
-.discord {
-  @apply inline-block duration-200 hover:scale-[1.15];
+  @apply flex items-center duration-1000 ease-out;
 }
 
 .discord-tooltip {
-  @apply absolute bottom-[10%] left-[51%] z-10 rounded bg-[#2fe691] p-1 duration-500 ease-in;
+  @apply absolute bottom-[100%] left-[57%] z-10 rounded bg-primary p-1 duration-500 ease-in;
 }

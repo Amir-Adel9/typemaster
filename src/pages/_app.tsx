@@ -2,7 +2,7 @@ import { type AppType } from 'next/app';
 
 import { trpc } from '../utils/trpc';
 
-import '../styles/globals.css';
+import '../styles/themes.css';
 import '../styles/register.css';
 import '../styles/index.css';
 

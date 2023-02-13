@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@layer base {
+  :root {
+    --color-primary: #2fe691;
+    --color-hovered: #3bb77d;
+    --color-correct-char: #fde047;
+    --color-wrong-char: #9f2727;
+    --color-underline: #a855f7;
+  }
+}
+
+.theme-emerald {
+  --color-primary: #2fe691;
+  --color-hovered: #3bb77d;
+  --color-correct-char: #fde047;
+  --color-wrong-char: #9f2727;
+  --color-underline: #a855f7;
+}
+
+.theme-diva {
+  --color-primary: #d0196e;
+  --color-hovered: #99295e;
+  --color-correct-char: #2fe691;
+  --color-wrong-char: #fde047;
+  --color-underline: #a855f7;
+}
+
+.theme-lavender {
+  --color-primary: #a855f7;
+  --color-hovered: #7a3fb2;
+  --color-correct-char: #2fe691;
+  --color-wrong-char: #9f2727;
+  --color-underline: #fde047;
+}
+
+.theme-ember {
+  --color-primary: #fde047;
+  --color-hovered: #bea83e;
+  --color-correct-char: #2fe691;
+  --color-wrong-char: #9f2727;
+  --color-underline: #a855f7;
+}
+
+.theme-crimson {
+  --color-primary: #9f2727;
+  --color-hovered: #6f2121;
+  --color-correct-char: #2fe691;
+  --color-wrong-char: #fde047;
+  --color-underline: #a855f7;
+}
+
+.theme-azure {
+  --color-primary: #366cbd;
+  --color-hovered: #31558a;
+  --color-correct-char: #2fe691;
+  --color-wrong-char: #fde047;
+  --color-underline: #a855f7;
+}

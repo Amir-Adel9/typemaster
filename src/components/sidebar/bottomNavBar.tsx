@@ -19,10 +19,10 @@ const BottomNavBar = (props: BottomNavBarProps) => {
   const [selected, setSelected] = useState(leaderboardRef);
 
   const handleSelection = () => {
-    selected.current?.classList.add('bg-[#2fe691]');
+    selected.current?.classList.add('bg-primary');
     selected.current?.classList.remove('bg-[#BBB]');
 
-    ('border-[#2fe691]');
+    ('border-primary');
     selected.current?.firstElementChild?.classList.remove('-translate-y-2');
     selected.current?.lastElementChild?.classList.add('translate-y-20');
     selected.current?.lastElementChild?.classList.remove('translate-y-0');
@@ -30,13 +30,13 @@ const BottomNavBar = (props: BottomNavBarProps) => {
       selected.current?.firstElementChild?.classList.remove('scale-[0.55]');
     } else {
       selected.current?.classList.remove('border-[#EEE]');
-      selected.current?.classList.add('border-[#2fe691]');
+      selected.current?.classList.add('border-primary');
       selected.current?.firstElementChild?.classList.remove('scale-[0.8]');
     }
   };
 
   useEffect(() => {
-    selected.current?.classList.remove('bg-[#2fe691]');
+    selected.current?.classList.remove('bg-primary');
     selected.current?.classList.add('bg-[#BBB]');
     selected.current?.firstElementChild?.classList.add('-translate-y-2');
     selected.current?.lastElementChild?.classList.remove('translate-y-20');
@@ -51,11 +51,11 @@ const BottomNavBar = (props: BottomNavBarProps) => {
     }
   }, [selected]);
   return (
-    <section className='absolute bottom-0 flex h-[7%] w-full cursor-pointer rounded-sm bg-[#2fe691]'>
+    <section className='absolute bottom-0 flex h-[7%] w-full cursor-pointer rounded-sm bg-primary'>
       <div
-        className='group flex h-full w-1/4 flex-col  items-center justify-center  bg-[#2fe691] text-center duration-300 hover:bg-red-500'
+        className='group flex h-full w-1/4 flex-col  items-center justify-center  bg-primary text-center duration-300 hover:bg-red-500'
         onClick={() => {
-          localStorage.clear();
+          localStorage.removeItem('displayName');
           router.push('/register');
         }}
       >
@@ -69,7 +69,7 @@ const BottomNavBar = (props: BottomNavBarProps) => {
         </b>
       </div>
       <div
-        className='group flex h-full w-2/4 flex-col items-center justify-center bg-[#2fe691] p-3 duration-300 hover:bg-[#3bb77d]'
+        className='group flex h-full w-2/4 flex-col items-center justify-center bg-primary p-3 duration-300 hover:bg-hovered'
         ref={leaderboardRef}
         onClick={() => {
           if (selected != leaderboardRef) {
@@ -90,7 +90,7 @@ const BottomNavBar = (props: BottomNavBarProps) => {
         </b>
       </div>
       <div
-        className='group flex h-full w-1/4 flex-col items-center justify-center border-r border-[#2fe691] bg-[#2fe691] text-center duration-300 hover:bg-[#3bb77d]'
+        className='group flex h-full w-1/4 flex-col items-center justify-center border-r border-primary bg-primary text-center duration-300 hover:bg-hovered'
         ref={myStatsRef}
         onClick={() => {
           if (selected != myStatsRef) {

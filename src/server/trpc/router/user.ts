@@ -38,7 +38,7 @@ export const userRouter = router({
   }),
   getAllUsersData: publicProcedure.query(async ({ ctx }) => {
     const usersData = await ctx.prisma.user.findMany({
-      select: { id: true, displayName: true, timesPlayed: true },
+      select: { id: true, displayName: true, timesPlayed: true, wins: true },
     });
     return usersData;
   }),
@@ -48,6 +48,14 @@ export const userRouter = router({
       await ctx.prisma.user.update({
         where: { id: input },
         data: { timesPlayed: { increment: 1 } },
+      });
+    }),
+  increaseWins: publicProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.user.update({
+        where: { id: input },
+        data: { wins: { increment: 1 } },
       });
     }),
 });
