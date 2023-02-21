@@ -3,12 +3,26 @@ import { type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FormEventHandler, useEffect, useRef, useState } from 'react';
+import type { FormEventHandler } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { themes } from '../constants/themes';
 
 import { trpc } from '../utils/trpc';
 
 const Home: NextPage = () => {
+  const [displayName, setDisplayName] = useState('');
+  const [invalidNameMessage, setInvalidNameMessage] = useState('');
+
+  const [isHovered, setIsHovered] = useState(false);
+
+  const [selectedTheme, setSelectedTheme] = useState('');
+
+  const titleRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const iconsRef = useRef<HTMLDivElement>(null);
+
   const router = useRouter();
   const ctx = trpc.useContext();
 
@@ -17,14 +31,6 @@ const Home: NextPage = () => {
   });
 
   const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
-
-  const titleRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const iconsRef = useRef<HTMLDivElement>(null);
-
-  const [selectedTheme, setSelectedTheme] = useState('');
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('selectedTheme') as string;
@@ -57,11 +63,6 @@ const Home: NextPage = () => {
       router.push('/');
     }
   }, [registeredDisplayNames]);
-
-  const [displayName, setDisplayName] = useState('');
-  const [invalidNameMessage, setInvalidNameMessage] = useState('');
-
-  const [isHovered, setIsHovered] = useState(false);
 
   const submitHandler: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();

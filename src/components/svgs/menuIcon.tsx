@@ -8,7 +8,9 @@ const MenuIcon = (props: MenuIconProps) => (
     width='32px'
     height='32px'
     viewBox='0 0 24 24'
-    className='absolute top-[30%] left-5 z-20 -scale-y-100 fill-white duration-300 hover:scale-x-[1.1] hover:-scale-y-[1.1] hover:animate-pulse hover:fill-primary'
+    className={`absolute top-[30%] left-5 z-20 -scale-y-100 fill-white duration-300 hover:scale-x-[1.1] hover:-scale-y-[1.1] hover:animate-pulse hover:fill-primary ${
+      props.sidebarIsShowing ? 'hidden' : ''
+    }`}
     xmlns='http://www.w3.org/2000/svg'
     onClick={() => {
       props.sidebarIsShowingHandler((prev) => !prev);

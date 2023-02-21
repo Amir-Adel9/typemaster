@@ -1,6 +1,7 @@
 interface DifficultyIconProps {
   difficultyIsShowing: boolean;
   difficultyIsShowingHandler: React.Dispatch<React.SetStateAction<boolean>>;
+  isGameStarted: boolean;
 }
 const DifficultyIcon = (props: DifficultyIconProps) => (
   <svg
@@ -9,7 +10,11 @@ const DifficultyIcon = (props: DifficultyIconProps) => (
       props.difficultyIsShowing ? 'animate-pulse' : ''
     }`}
     onClick={() => {
-      props.difficultyIsShowingHandler((prev) => !prev);
+      if (props.isGameStarted) {
+        return;
+      } else {
+        props.difficultyIsShowingHandler((prev) => !prev);
+      }
     }}
     xmlns='http://www.w3.org/2000/svg'
     xmlnsXlink='http://www.w3.org/1999/xlink'

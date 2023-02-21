@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { createRef, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import BottomNavBar from './bottomNavBar';
 
@@ -22,8 +22,8 @@ const Sidebar = (props: SideBarProps) => {
 
   useEffect(() => {
     props.isShowing
-      ? sideBarRef.current?.classList.remove('-translate-x-96')
-      : sideBarRef.current?.classList.add('-translate-x-96');
+      ? sideBarRef.current?.classList.remove('-translate-x-[96rem]')
+      : sideBarRef.current?.classList.add('-translate-x-[96rem]');
   }, [props.isShowing]);
 
   const [selectedTab, setSelectedTab] = useState('leaderboard');
@@ -61,8 +61,6 @@ const Sidebar = (props: SideBarProps) => {
     }
   }, [selectedTab]);
 
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const userRefs = useRef<HTMLDivElement[]>([]);
 
   userRefs.current = [];
@@ -74,7 +72,7 @@ const Sidebar = (props: SideBarProps) => {
   };
   return (
     <div
-      className={` fixed z-10 h-full w-[20%] -translate-x-96 border-r-[1px] border-[#111] bg-[#111] duration-700 ease-in-out theme-${props.theme}`}
+      className={` fixed z-10 h-full w-[20%] -translate-x-[96rem] border-r-[1px] border-[#111] bg-[#111] duration-700 ease-in-out theme-${props.theme}`}
       ref={sideBarRef}
     >
       <div className='flex w-full flex-col items-start border-b border-primary pb-3'>
@@ -112,10 +110,7 @@ const Sidebar = (props: SideBarProps) => {
       </div>
       <div>
         <div className=' text-white'>
-          <ol
-            type='1'
-            className='max-h-[46.6rem] list-inside overflow-auto scrollbar-hide'
-          >
+          <ol className='max-h-[46.6rem]  overflow-auto scrollbar-hide'>
             {selectedTab === 'leaderboard' ? (
               sortedUsers?.map((user, idx) => {
                 return (
@@ -140,7 +135,7 @@ const Sidebar = (props: SideBarProps) => {
                         v
                       </span>
                       <div
-                        className='mx-2 flex hidden justify-between overflow-auto'
+                        className='mx-2 flex hidden justify-between'
                         ref={addToRefs}
                       >
                         <div>Times Played: {user.timesPlayed}</div>

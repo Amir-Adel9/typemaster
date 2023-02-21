@@ -3,7 +3,7 @@ import { difficulties } from '../../constants/difficulties';
 interface DifficultyDropdownProps {
   isActive: boolean;
   difficultyHandler: React.Dispatch<
-    React.SetStateAction<{ timeLimit: number; wordCount: number } | undefined>
+    React.SetStateAction<{ timeLimit: number; wordCount: number }>
   >;
 }
 
@@ -18,7 +18,7 @@ const DifficultyDropdown = (props: DifficultyDropdownProps) => {
         <li
           className='p-1 hover:bg-[#111] hover:text-primary'
           onClick={() => {
-            props.difficultyHandler(difficulties[0]);
+            props.difficultyHandler(difficulties[0]!);
           }}
         >
           Easy
@@ -26,7 +26,7 @@ const DifficultyDropdown = (props: DifficultyDropdownProps) => {
         <li
           className='p-1 hover:bg-[#111] hover:text-primary'
           onClick={() => {
-            props.difficultyHandler(difficulties[1]);
+            props.difficultyHandler(difficulties[1]!);
           }}
         >
           Normal
@@ -34,7 +34,7 @@ const DifficultyDropdown = (props: DifficultyDropdownProps) => {
         <li
           className='p-1 hover:bg-[#111] hover:text-primary'
           onClick={() => {
-            props.difficultyHandler(difficulties[2]);
+            props.difficultyHandler(difficulties[2]!);
           }}
         >
           Hard

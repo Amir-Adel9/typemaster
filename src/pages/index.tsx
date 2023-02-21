@@ -5,26 +5,58 @@ import Head from 'next/head';
 
 import { trpc } from '../utils/trpc';
 import type { FormEvent } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import router from 'next/router';
 
 import Sidebar from '../components/sidebar/sidebar';
 import MenuIcon from '../components/svgs/menuIcon';
-import InstructionsIcon from '../components/svgs/instructionsIcon';
-import DifficultyIcon from '../components/svgs/difficultyIcon';
-import DifficultyDropdown from '../components/dropdowns/difficultyDropdown';
-import ThemeIcon from '../components/svgs/themeIcon';
-import ThemeDropdown from '../components/dropdowns/themeDropdown';
 
 import { useInterval } from '../utils/useInterval';
+
 import { difficulties } from '../constants/difficulties';
 import { themes } from '../constants/themes';
+
+import Instructions from '../components/Instructions';
+import Game from '../components/Game';
 
 const Home: NextPage = () => {
   const [displayName, setDisplayName] = useState('');
   const [selectedTheme, setSelectedTheme] = useState('');
+
+  const [difficulty, setDifficulty] = useState(difficulties[0]!);
+
+  const [words, setWords] = useState(['']);
+  const [currentWord, setCurrentWord] = useState('');
+  const [splittedCurrentWord, setSplittedCurrentWord] = useState(['']);
+
+  const [timeLeft, setTimeLeft] = useState(5);
+  const [accuracy, setAccuracy] = useState(0);
+  const [gameResult, setGameResult] = useState('');
+  const [score, setScore] = useState(0);
+
+  const [gameStarted, setGameStarted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+
+  const [incorrect, setIncorrect] = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const [charsTyped, setCharsTyped] = useState(0);
+
+  const [isShowing, setIsShowing] = useState(false);
+
+  const [isShowingDropDown, setIsShowingDropDown] = useState(false);
+  const [themeIsShowing, setThemeIsShowing] = useState(false);
+  const [isInstructionsMode, setIsInstructionsMode] = useState(true);
+
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const gameBodyRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const wordRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const startButtonRef = useRef<HTMLButtonElement>(null);
+
+  const headerTitleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const storedDisplayName = localStorage.getItem('displayName') as string;
@@ -46,6 +78,32 @@ const Home: NextPage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    refetch();
+  }, [difficulty]);
+
+  useEffect(() => {
+    setIsShowing(false);
+    if (selectedTheme) {
+      localStorage.setItem('selectedTheme', selectedTheme);
+    }
+  }, [selectedTheme]);
+
+  useEffect(() => {
+    setAccuracy((correct / (correct + incorrect)) * 100);
+  }, [correct, incorrect]);
+
+  useEffect(() => {
+    if (isShowing) {
+      bodyRef.current?.classList.add('translate-x-[15%]');
+      gameBodyRef.current?.classList.add('translate-x-[15%]');
+    } else {
+      bodyRef.current?.classList.remove('translate-x-[15%]');
+      gameBodyRef.current?.classList.remove('translate-x-[15%]');
+      headerTitleRef.current?.classList.remove('translate-x-[170%]');
+    }
+  }, [isShowing]);
+
   const { isLoading, refetch } = useQuery(
     ['randomWords'],
     () =>
@@ -62,7 +120,6 @@ const Home: NextPage = () => {
 
   const ctx = trpc.useContext();
 
-  const registeredDisplayNames = trpc.user.getAllDisplayNames.useQuery();
   const allUsersData = trpc.user.getAllUsersData.useQuery();
   const currentUserData = allUsersData.data?.find((user) => {
     if (user.displayName === displayName) {
@@ -85,37 +142,6 @@ const Home: NextPage = () => {
     };
   });
 
-  const [difficulty, setDifficulty] = useState(difficulties[0]);
-
-  const [words, setWords] = useState(['']);
-  const [currentWord, setCurrentWord] = useState('');
-  const [splittedCurrentWord, setSplittedCurrentWord] = useState(['']);
-
-  const [timeLeft, setTimeLeft] = useState(50);
-  const [gameResult, setGameResult] = useState('');
-  const [score, setScore] = useState(0);
-
-  const [gameStarted, setGameStarted] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const wordRef = useRef() as React.MutableRefObject<HTMLDivElement>;
-  const startButtonRef = useRef<HTMLButtonElement>(null);
-
-  const headerTitleRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    refetch();
-  }, [difficulty]);
-
-  useEffect(() => {
-    setIsShowing(false);
-    if (selectedTheme) {
-      localStorage.setItem('selectedTheme', selectedTheme);
-    }
-  }, [selectedTheme]);
-
   const currentWordHandler = () => {
     const randomWord = words[
       Math.floor(Math.random() * words.length)
@@ -131,7 +157,7 @@ const Home: NextPage = () => {
   const changeDifficultyHandler = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setDifficulty(difficulties[event.target.value as unknown as number]);
+    setDifficulty(difficulties[event.target.value as unknown as number]!);
   };
 
   const getLetterColor = (idx: number, letter: string) => {
@@ -140,7 +166,7 @@ const Home: NextPage = () => {
 
     if (idx == currentCharIdx) {
       return isPlaying
-        ? 'text-primary animate-pulse underline decoration-underline'
+        ? 'text-primary animate-pulse underline decoration-underline '
         : 'text-primary';
     }
     if (inputRef?.current?.value[idx] == null) {
@@ -154,11 +180,26 @@ const Home: NextPage = () => {
   };
 
   const handleInput = (event: FormEvent<HTMLInputElement>) => {
+    if (event.currentTarget.value.length < charsTyped) {
+      return;
+    }
+    setCharsTyped(charsTyped + 1);
+    if (
+      event.currentTarget.value.at(-1) ===
+      splittedCurrentWord[event.currentTarget.value.length - 1]
+    ) {
+      setCorrect(correct + 1);
+    } else {
+      setIncorrect(incorrect + 1);
+    }
+
     if (event.currentTarget.value === currentWord) {
       inputRef.current.value = '';
       setScore((prevScore) => prevScore + 1);
+      setCharsTyped(0);
       if (words.length === 0) {
         increaseWinsMutation.mutate(currentUserData?.id as string);
+        setIsGameOver(true);
         setIsPlaying(false);
         setGameStarted(false);
         setGameResult('You Won!');
@@ -167,19 +208,24 @@ const Home: NextPage = () => {
         startButtonRef.current?.classList.remove('hidden');
       }
       currentWordHandler();
-
       setTimeLeft(difficulty?.timeLimit as number);
     }
   };
 
   const gameStartHandler = () => {
+    setCharsTyped(0);
+    setAccuracy(0);
+    setCorrect(0);
+    setIncorrect(0);
+    setScore(0);
+    setIsGameOver(false);
+    setGameStarted(true);
+    setIsPlaying(true);
     setIsInstructionsMode(false);
     startButtonRef.current?.classList.add('hidden');
     inputRef.current.value = '';
     increaseTimesPlayedMutation.mutate(currentUserData?.id as string);
-    setScore(0);
-    setGameStarted(true);
-    setIsPlaying(true);
+
     currentWordHandler();
     setTimeLeft(difficulty?.timeLimit as number);
     setGameResult('');
@@ -190,11 +236,11 @@ const Home: NextPage = () => {
       if (!gameStarted) {
         return;
       }
-      setTimeLeft((timeLeft) => timeLeft - 1);
-
       inputRef.current.focus();
+      setTimeLeft(timeLeft - 1);
 
       if (timeLeft === 1) {
+        setIsGameOver(true);
         setIsPlaying(false);
         setGameStarted(false);
         setGameResult('You Lost');
@@ -204,20 +250,6 @@ const Home: NextPage = () => {
     },
     isPlaying ? 100 : null
   );
-
-  const [isShowing, setIsShowing] = useState(false);
-
-  const [isShowingDropDown, setIsShowingDropDown] = useState(false);
-  const [themeIsShowing, setThemeIsShowing] = useState(false);
-  const [isInstructionsMode, setIsInstructionsMode] = useState(true);
-
-  useEffect(() => {
-    if (isShowing) {
-      bodyRef.current?.classList.add('translate-x-36');
-    } else {
-      bodyRef.current?.classList.remove('translate-x-36');
-    }
-  }, [isShowing]);
 
   return (
     <>
@@ -235,9 +267,8 @@ const Home: NextPage = () => {
       />
       <div
         className={
-          'h-[100vh] min-h-screen overflow-x-auto overflow-y-auto bg-[#222] duration-500 ease-in-out '
+          'h-[100vh] min-h-screen w-full overflow-x-auto overflow-y-auto bg-[#222] duration-500 ease-in-out '
         }
-        ref={bodyRef}
         onClick={() => {
           if (isShowingDropDown) {
             setIsShowingDropDown(false);
@@ -256,10 +287,7 @@ const Home: NextPage = () => {
               sidebarIsShowingHandler={setIsShowing}
             />
           </button>
-          <span
-            className='absolute text-center duration-1000'
-            ref={headerTitleRef}
-          >
+          <span className='relative duration-700' ref={headerTitleRef}>
             Type Master
           </span>
         </header>
@@ -268,158 +296,52 @@ const Home: NextPage = () => {
           ref={inputRef}
           className='w-1/2 cursor-default opacity-0 disabled:bg-white'
           onChange={handleInput}
+          maxLength={currentWord?.length}
           disabled={!gameStarted ? true : false}
         />
         <main
           className={`flex h-[80%] w-full items-center justify-center theme-${selectedTheme}`}
         >
           {isInstructionsMode ? (
-            <div className='relative flex h-[80%] w-[70%] flex-col items-center justify-evenly rounded-2xl bg-[#111]'>
-              <div className='absolute top-3 left-3 flex w-20 justify-around'></div>
-              <div className='mt-8 text-center font-mono text-xl text-primary'>
-                Instructions
-              </div>
-              <div className='my-5 text-center font-poppins text-white'>
-                Welcome to Type Master, You will be shown a series of random
-                words and
-                <br />
-                will have to type the prompted word within a certain time. The
-                word count
-                <br /> and the time limit to type each word is determined by the
-                game&apos;s difficulty
-              </div>
-              <div>
-                <div className='text-center font-poppins text-white'>
-                  You are now playing on the{' '}
-                  <span className='text-primary'>
-                    <select
-                      className='mx-1 border-none bg-primary font-poppins font-bold text-black outline-none'
-                      onChange={changeDifficultyHandler}
-                    >
-                      <option
-                        className='hover:text-[#111]'
-                        selected={difficulty?.wordCount === 15 ? true : false}
-                        value='0'
-                      >
-                        Easy
-                      </option>
-                      <option
-                        selected={difficulty?.wordCount === 25 ? true : false}
-                        value='1'
-                      >
-                        Normal
-                      </option>
-                      <option
-                        selected={difficulty?.wordCount === 30 ? true : false}
-                        value='2'
-                      >
-                        Hard
-                      </option>
-                    </select>
-                  </span>{' '}
-                  difficulity <br /> and you have{' '}
-                  <span className='text-primary '>
-                    {gameStarted
-                      ? Math.trunc(timeLeft / 10)
-                      : Math.trunc((difficulty?.timeLimit as number) / 10)}
-                  </span>{' '}
-                  seconds to type the each word
-                  <span className='mt-2 block'>
-                    Words to type:{' '}
-                    <span className='text-primary '>
-                      {difficulty?.wordCount}
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <button
-                className='mt-5 block w-[50%] rounded-md bg-primary p-5 font-mono text-2xl font-bold duration-300 hover:scale-[1.04] hover:bg-hovered'
-                onClick={gameStartHandler}
-                ref={startButtonRef}
-              >
-                Start Playing
-              </button>
-            </div>
+            <Instructions
+              difficulty={difficulty!}
+              onChangeDifficulty={changeDifficultyHandler}
+              gameStarted={gameStarted}
+              onGameStart={gameStartHandler}
+              timeLeft={timeLeft}
+              bodyRef={bodyRef}
+              startButtonRef={startButtonRef}
+            />
           ) : (
-            <div className='relative flex h-[80%] w-[70%] flex-col items-center justify-center rounded-2xl bg-[#111]'>
-              <div className='absolute top-3 left-3 flex w-24 justify-evenly'>
-                <InstructionsIcon
-                  isInstructionsMode={isInstructionsMode}
-                  instructionsModeHandler={setIsInstructionsMode}
-                />
-                <DifficultyIcon
-                  difficultyIsShowing={isShowingDropDown}
-                  difficultyIsShowingHandler={setIsShowingDropDown}
-                />
-                <DifficultyDropdown
-                  isActive={isShowingDropDown}
-                  difficultyHandler={setDifficulty}
-                />
-                <ThemeIcon
-                  themeIsShowing={themeIsShowing}
-                  themeIsShowingHandler={setThemeIsShowing}
-                />
-                <ThemeDropdown
-                  isActive={themeIsShowing}
-                  currentThemeHandler={setSelectedTheme}
-                />
-              </div>
-              <b className='absolute top-20 text-3xl text-white '>
-                {gameResult}
-              </b>
-              <b
-                className={`select-none text-center font-mono font-semibold duration-200 ${
-                  isPlaying ? 'text-8xl' : 'absolute top-[30%] text-5xl'
-                }`}
-                ref={wordRef}
-              >
-                {splittedCurrentWord?.map((letter, idx) => (
-                  <span key={idx} className={getLetterColor(idx, letter)}>
-                    {letter}
-                  </span>
-                ))}
-              </b>
-              <div className='mt-5 flex w-full flex-wrap justify-center rounded-lg  p-4 text-center font-poppins text-base font-medium'>
-                {isLoading ? (
-                  'Loading...'
-                ) : !gameStarted ? (
-                  <b className='hidden'></b>
-                ) : (
-                  words.map((word: string) => {
-                    return (
-                      <b
-                        key={word}
-                        className=' ] m-1 rounded-md bg-primary p-[10px]'
-                      >
-                        {word}
-                      </b>
-                    );
-                  })
-                )}
-              </div>
-              <button
-                className='absolute bottom-20 mt-5 hidden  w-[50%] rounded-md bg-primary  p-5 font-mono text-2xl font-bold duration-300 hover:scale-[1.04] hover:bg-hovered'
-                onClick={gameStartHandler}
-                ref={startButtonRef}
-              >
-                Start Playing
-              </button>
-              <div className='absolute bottom-0 flex w-full  justify-between rounded-lg p-4 text-center text-white'>
-                <b>
-                  Time Left:{' '}
-                  <span className='text-primary'>
-                    {gameStarted
-                      ? Math.trunc(timeLeft / 10)
-                      : Math.trunc((difficulty?.timeLimit as number) / 10)}
-                  </span>{' '}
-                  Seconds
-                </b>
-                <b>
-                  Score: <span className='text-primary '>{score}</span> from{' '}
-                  <span className='text-primary '>{difficulty?.wordCount}</span>
-                </b>
-              </div>
-            </div>
+            <Game
+              accuracy={accuracy}
+              correct={correct}
+              currentThemeHandler={setSelectedTheme}
+              difficulty={difficulty!}
+              difficultyHandler={setDifficulty}
+              gameBodyRef={gameBodyRef}
+              gameResult={gameResult}
+              gameStartHandler={gameStartHandler}
+              gameStarted={gameStarted}
+              getCharClass={getLetterColor}
+              incorrect={incorrect}
+              isInstructionsMode={isInstructionsMode}
+              isInstructionsModeHandler={setIsInstructionsMode}
+              isLoading={isLoading}
+              isPlaying={isPlaying}
+              isGameOver={isGameOver}
+              isShowingDropDown={isShowingDropDown}
+              isShowingDropdownHandler={setIsShowingDropDown}
+              isShowingThemeHandler={setThemeIsShowing}
+              score={score}
+              splittedCurrentWord={splittedCurrentWord}
+              startButtonRef={startButtonRef}
+              themeIsShowing={themeIsShowing}
+              timeLeft={timeLeft}
+              wordRef={wordRef}
+              userData={currentUserData!}
+              words={words}
+            />
           )}
         </main>
       </div>

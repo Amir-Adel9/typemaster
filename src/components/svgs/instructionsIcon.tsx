@@ -1,12 +1,17 @@
 interface IconProps {
   isInstructionsMode: boolean;
   instructionsModeHandler: React.Dispatch<React.SetStateAction<boolean>>;
+  isGameStarted: boolean;
 }
 
 const InstructionsIcon = (props: IconProps) => (
   <svg
     onClick={() => {
-      props.instructionsModeHandler((prev) => !prev);
+      if (props.isGameStarted) {
+        return;
+      } else {
+        props.instructionsModeHandler((prev) => !prev);
+      }
     }}
     className='cursor-pointer fill-primary duration-200 hover:scale-110'
     width={24}
