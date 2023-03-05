@@ -19,7 +19,7 @@ const config = {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
         port: '',
-        pathname: '/dwjsclem2/**',
+        pathname: `/${process.env.CLOUD_NAME}/**`,
       },
     ],
   },
