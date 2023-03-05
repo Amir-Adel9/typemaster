@@ -14,10 +14,9 @@ interface InstructionsProps {
 const Instructions = (props: InstructionsProps) => {
   return (
     <div
-      className='relative flex h-[80%] w-[70%] flex-col items-center justify-evenly rounded-2xl bg-[#111] duration-700'
+      className='relative flex h-[70%] w-[70%] flex-col items-center justify-evenly rounded-2xl bg-[#111] duration-700'
       ref={props.bodyRef}
     >
-      <div className='absolute top-3 left-3 flex w-20 justify-around'></div>
       <div className='mt-8 text-center font-mono text-xl text-primary'>
         Instructions
       </div>

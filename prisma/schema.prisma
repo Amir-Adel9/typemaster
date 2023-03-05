@@ -15,8 +15,11 @@ generator client {
 model User {
   id        String   @id @default(cuid())
   displayName String
+  imageURL String @default("")
   timesPlayed Int @default(0)
   wins Int @default(0)
+  level Int @default(1)
+  levelExp Float @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

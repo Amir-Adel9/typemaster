@@ -33,6 +33,8 @@ const Home: NextPage = () => {
 
   const [timeLeft, setTimeLeft] = useState(5);
   const [accuracy, setAccuracy] = useState(0);
+  const [gameExp, setGameExp] = useState(0);
+  const [levelExp, setLevelExp] = useState(0);
   const [gameResult, setGameResult] = useState('');
   const [score, setScore] = useState(0);
 
@@ -61,6 +63,9 @@ const Home: NextPage = () => {
   useEffect(() => {
     const storedDisplayName = localStorage.getItem('displayName') as string;
     const storedTheme = localStorage.getItem('selectedTheme') as string;
+    const storedLevelExp = JSON.parse(
+      localStorage.getItem('levelExp') as string
+    );
 
     const isRegistered = storedDisplayName ? true : false;
     if (!isRegistered) {
@@ -70,6 +75,7 @@ const Home: NextPage = () => {
       setDisplayName(
         storedDisplayName.charAt(0).toUpperCase() + storedDisplayName.slice(1)
       );
+      setLevelExp(storedLevelExp);
       if (!storedTheme) {
         setSelectedTheme(themes[0] as string);
       } else {
@@ -90,8 +96,35 @@ const Home: NextPage = () => {
   }, [selectedTheme]);
 
   useEffect(() => {
+    if (correct + incorrect === 0) {
+      setAccuracy(0);
+    }
     setAccuracy((correct / (correct + incorrect)) * 100);
   }, [correct, incorrect]);
+
+  useEffect(() => {
+    setGameExp((score / difficulty.wordCount) * 10);
+  }, [score]);
+
+  useEffect(() => {
+    if (gameResult === 'You Lost') {
+      setLevelExp((prevState) => prevState + gameExp);
+    }
+    if (gameResult === 'You Won!') {
+      setLevelExp((prevState) => prevState + 10);
+    }
+  }, [gameResult]);
+
+  useEffect(() => {
+    if (levelExp) {
+      localStorage.setItem('levelExp', JSON.stringify(levelExp));
+    }
+    if (levelExp >= 100) {
+      increaseLevelMutation.mutate(currentUserData?.id as string);
+      localStorage.setItem('levelExp', JSON.stringify(levelExp));
+      setLevelExp(0);
+    }
+  }, [levelExp]);
 
   useEffect(() => {
     if (isShowing) {
@@ -123,7 +156,7 @@ const Home: NextPage = () => {
   const allUsersData = trpc.user.getAllUsersData.useQuery();
   const currentUserData = allUsersData.data?.find((user) => {
     if (user.displayName === displayName) {
-      return user.id;
+      return user;
     }
   });
 
@@ -133,12 +166,18 @@ const Home: NextPage = () => {
   const increaseWinsMutation = trpc.user.increaseWins.useMutation({
     onSuccess: () => ctx.user.invalidate(),
   });
+  const increaseLevelMutation = trpc.user.increaseLevel.useMutation({
+    onSuccess: () => ctx.user.invalidate(),
+  });
   const userData = allUsersData.data?.map((user) => {
     return {
       id: user.id,
       displayName: user.displayName,
       timesPlayed: user.timesPlayed,
+      imageURL: user.imageURL,
       wins: user.wins,
+      level: user.level,
+      levelExp: user.levelExp,
     };
   });
 
@@ -264,10 +303,11 @@ const Home: NextPage = () => {
         userData={userData}
         currentUserData={currentUserData}
         theme={selectedTheme}
+        levelExp={levelExp}
       />
       <div
         className={
-          'h-[100vh] min-h-screen w-full overflow-x-auto overflow-y-auto bg-[#222] duration-500 ease-in-out '
+          'item-center flex h-screen w-full flex-col overflow-x-auto overflow-y-auto bg-[#222] duration-500 ease-in-out '
         }
         onClick={() => {
           if (isShowingDropDown) {
@@ -279,7 +319,7 @@ const Home: NextPage = () => {
         }}
       >
         <header
-          className={`relative theme-${selectedTheme} flex h-[4.5rem] w-[full] items-center justify-center bg-[#111] font-mono text-lg font-bold text-primary`}
+          className={`fixed theme-${selectedTheme} flex h-[8%] w-screen items-center justify-center bg-[#111] font-mono text-lg font-bold text-primary`}
         >
           <button>
             <MenuIcon
@@ -287,20 +327,20 @@ const Home: NextPage = () => {
               sidebarIsShowingHandler={setIsShowing}
             />
           </button>
-          <span className='relative duration-700' ref={headerTitleRef}>
+          <span className='duration-700' ref={headerTitleRef}>
             Type Master
           </span>
         </header>
         <input
           type='text'
           ref={inputRef}
-          className='w-1/2 cursor-default opacity-0 disabled:bg-white'
+          className='disabled w-1/2 cursor-default opacity-0'
           onChange={handleInput}
           maxLength={currentWord?.length}
           disabled={!gameStarted ? true : false}
         />
         <main
-          className={`flex h-[80%] w-full items-center justify-center theme-${selectedTheme}`}
+          className={`flex h-full items-center justify-center theme-${selectedTheme}`}
         >
           {isInstructionsMode ? (
             <Instructions
@@ -334,6 +374,8 @@ const Home: NextPage = () => {
               isShowingDropdownHandler={setIsShowingDropDown}
               isShowingThemeHandler={setThemeIsShowing}
               score={score}
+              levelExp={levelExp}
+              level={currentUserData?.level as number}
               splittedCurrentWord={splittedCurrentWord}
               startButtonRef={startButtonRef}
               themeIsShowing={themeIsShowing}

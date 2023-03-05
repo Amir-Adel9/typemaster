@@ -1,9 +1,10 @@
-import { useState } from 'react';
 import DifficultyDropdown from './dropdowns/difficultyDropdown';
 import ThemeDropdown from './dropdowns/themeDropdown';
 import DifficultyIcon from './svgs/difficultyIcon';
 import InstructionsIcon from './svgs/instructionsIcon';
 import ThemeIcon from './svgs/themeIcon';
+
+import Image from 'next/image';
 
 interface GameProps {
   words: string[];
@@ -21,6 +22,7 @@ interface GameProps {
   userData: {
     displayName: string;
     id: string;
+    imageURL: string;
     timesPlayed: number;
     wins: number;
   };
@@ -33,6 +35,8 @@ interface GameProps {
   correct: number;
   incorrect: number;
   accuracy: number;
+  levelExp: number;
+  level: number;
   score: number;
   isInstructionsMode: boolean;
   isShowingDropDown: boolean;
@@ -51,7 +55,7 @@ interface GameProps {
 const Game = (props: GameProps) => {
   return (
     <div
-      className='relative flex h-[80%] w-[70%] flex-col items-center justify-center rounded-2xl bg-[#111] duration-700'
+      className='relative flex h-[70%] w-[70%] flex-col items-center justify-center rounded-2xl bg-[#111] duration-700'
       ref={props.gameBodyRef}
     >
       <div className='absolute top-3 left-3 flex w-24 justify-evenly'>
@@ -81,7 +85,7 @@ const Game = (props: GameProps) => {
       <b className='absolute top-20 text-3xl text-white '>{props.gameResult}</b>
       <b
         className={`select-none text-center font-mono font-semibold duration-200 ${
-          props.isPlaying ? 'text-8xl' : 'absolute top-[30%] text-5xl'
+          props.isPlaying ? 'text-8xl' : 'absolute top-[25%] text-5xl'
         }`}
         ref={props.wordRef}
       >
@@ -91,7 +95,11 @@ const Game = (props: GameProps) => {
           </span>
         ))}
       </b>
-      <div className='mt-5 flex w-full flex-wrap justify-center rounded-lg  p-4 text-center font-poppins text-base font-medium'>
+      <div
+        className={`mt-5 flex w-full flex-wrap justify-center rounded-lg  p-4 text-center font-poppins text-base font-medium ${
+          props.isGameOver ? 'hidden' : ''
+        }`}
+      >
         {props.isLoading ? (
           'Loading...'
         ) : !props.gameStarted ? (
@@ -111,24 +119,31 @@ const Game = (props: GameProps) => {
           !props.isGameOver ? 'hidden' : ''
         }`}
       >
-        <b className=''>{props.userData.displayName}</b>
-        <b className=''>Times Played: {props.userData.timesPlayed}</b>
-        <b className=''>Wins: {props.userData.wins}</b>
-        <div className='mt-10 flex w-[40%] justify-between'>
-          <b>
-            Correct: <span className='text-primary'>{props.correct}</span>
-          </b>
-          <b>
-            Accuracy:{' '}
-            <span className='text-primary'>{props.accuracy.toFixed(1)}%</span>
-          </b>
-          <b>
-            Incorrect: <span className='text-primary'>{props.incorrect}</span>
-          </b>
-          <b>
-            Score: <span className='text-primary '>{props.score}</span> from{' '}
-            <span className='text-primary '>{props.difficulty?.wordCount}</span>
-          </b>
+        <span className='h-12 w-12 overflow-hidden rounded-full border-2 border-primary'>
+          <Image
+            src={
+              props.userData?.imageURL ? props.userData?.imageURL : '/user.svg'
+            }
+            alt=''
+            width={100}
+            height={100}
+            className='h-full w-full duration-300 ease-in-out'
+          />
+        </span>
+
+        <b>{props.userData?.displayName}</b>
+        <b>Times Played: {props.userData.timesPlayed}</b>
+        <b>Wins: {props.userData.wins}</b>
+        <b>Lvl. {props.level}</b>
+
+        <div className='relative h-3 w-[25%] rounded-full bg-gray-200 text-center'>
+          <span className='absolute left-[45%] z-20 text-xs font-bold leading-none text-black'>
+            {props.levelExp.toFixed(1)}%
+          </span>
+          <div
+            className='absolute left-0 z-10 h-3 rounded-full bg-primary duration-1000'
+            style={{ width: `${props.levelExp}%` }}
+          ></div>
         </div>
       </div>
       <button
@@ -138,11 +153,7 @@ const Game = (props: GameProps) => {
       >
         Start Playing
       </button>
-      <div
-        className={`absolute bottom-0 flex w-full justify-between rounded-lg p-4 text-center text-white ${
-          props.isGameOver ? 'hidden' : ''
-        }`}
-      >
+      <div className='absolute bottom-0 flex w-full justify-between rounded-lg p-4 text-center text-white '>
         <b>
           Time Left:{' '}
           <span className='text-primary'>

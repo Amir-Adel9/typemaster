@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { router, publicProcedure } from '../trpc';
 
+import { uploadImage } from '../../../utils/cloudinary';
+
 export const userRouter = router({
   setDisplayName: publicProcedure
     .input(z.string())
@@ -38,7 +40,15 @@ export const userRouter = router({
   }),
   getAllUsersData: publicProcedure.query(async ({ ctx }) => {
     const usersData = await ctx.prisma.user.findMany({
-      select: { id: true, displayName: true, timesPlayed: true, wins: true },
+      select: {
+        id: true,
+        displayName: true,
+        timesPlayed: true,
+        imageURL: true,
+        levelExp: true,
+        wins: true,
+        level: true,
+      },
     });
     return usersData;
   }),
@@ -56,6 +66,24 @@ export const userRouter = router({
       await ctx.prisma.user.update({
         where: { id: input },
         data: { wins: { increment: 1 } },
+      });
+    }),
+  increaseLevel: publicProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.user.update({
+        where: { id: input },
+        data: { level: { increment: 1 } },
+      });
+    }),
+  uploadImage: publicProcedure
+    .input(z.object({ id: z.string(), imageBase64: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const imageData = await uploadImage(input.imageBase64);
+      console.log('data', imageData);
+      await ctx.prisma.user.update({
+        where: { id: input.id },
+        data: { imageURL: imageData.secure_url },
       });
     }),
 });

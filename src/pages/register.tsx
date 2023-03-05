@@ -86,34 +86,28 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main
-        className={`flex min-h-screen flex-col items-center justify-center bg-[#222] theme-${selectedTheme}`}
+        className={`flex h-screen flex-col items-center justify-center bg-[#222] theme-${selectedTheme}`}
       >
-        <b
-          className='absolute top-10 hidden -translate-y-96 bg-gradient-to-r from-primary to-hovered bg-clip-text font-poppins text-5xl text-transparent duration-1000 ease-out'
-          ref={titleRef}
-        >
-          Type Master
-        </b>
-        <div className='mt-7  h-[30rem] w-[50%] rounded-xl bg-[#111]'>
+        <div className='mt-7 h-1/2 w-1/2 rounded-xl bg-[#111]'>
           <img
             src='../../boyohboy.jpg'
             alt='boyohboy'
-            className='float-right h-full w-[40%] select-none rounded-xl rounded-l-none border-l-2 duration-300 hover:scale-105'
+            className='float-right hidden h-full w-[40%] select-none rounded-xl rounded-l-none border-l-2 duration-300 hover:scale-105 md:inline lg:inline'
           />
 
           <form
-            className='flex h-full w-[60%] flex-col items-center'
+            className='flex h-full flex-col items-center justify-between'
             onSubmit={submitHandler}
           >
             <b
-              className=' title relative mt-5 font-poppins text-5xl'
+              className=' title relative mt-5 font-poppins text-2xl md:text-3xl lg:text-5xl'
               ref={textRef}
             >
               Type Master...
             </b>
-            <div className='absolute top-[50%] flex w-[29%] flex-col items-center justify-center'>
+            <div className='relative mb-10 flex flex-col items-center justify-center'>
               <b
-                className='-translate-y-[900px] font-mono text-2xl text-white duration-[1500ms]  ease-out'
+                className='-translate-y-[900px] font-mono text-lg text-white duration-[1500ms] ease-out md:text-xl  lg:text-2xl'
                 ref={textRef}
               >
                 Choose your display name
