@@ -183,7 +183,7 @@ const Sidebar = (props: SideBarProps) => {
         <b className='ml-2 text-white'>Lvl.1</b>
         <div className=' relative ml-2 h-3 w-[95%] rounded-full bg-gray-200 text-center'>
           <span className='absolute left-[45%] z-20 text-xs font-bold leading-none text-black'>
-            {props.levelExp?.toFixed(1)}%
+            {props.currentUserData?.levelExp?.toFixed(1)}%
           </span>
           <div
             className='absolute left-0 z-10 h-3 rounded-full bg-primary duration-1000'
