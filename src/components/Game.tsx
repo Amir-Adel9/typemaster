@@ -138,7 +138,7 @@ const Game = (props: GameProps) => {
 
         <div className='relative h-3 w-[25%] rounded-full bg-gray-200 text-center'>
           <span className='absolute left-[45%] z-20 text-xs font-bold leading-none text-black'>
-            {props.levelExp.toFixed(1)}%
+            {props.levelExp?.toFixed(1)}%
           </span>
           <div
             className='absolute left-0 z-10 h-3 rounded-full bg-primary duration-1000'
@@ -169,7 +169,7 @@ const Game = (props: GameProps) => {
         </b>
         <b>
           Accuracy:{' '}
-          <span className='text-primary'>{props.accuracy.toFixed(1)}%</span>
+          <span className='text-primary'>{props.accuracy?.toFixed(1)}%</span>
         </b>
         <b>
           Incorrect: <span className='text-primary'>{props.incorrect}</span>
