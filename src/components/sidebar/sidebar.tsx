@@ -187,7 +187,7 @@ const Sidebar = (props: SideBarProps) => {
           </span>
           <div
             className='absolute left-0 z-10 h-3 rounded-full bg-primary duration-1000'
-            style={{ width: `${props.levelExp}%` }}
+            style={{ width: `${props.currentUserData?.levelExp}%` }}
           ></div>
         </div>
         <div className='ml-2 flex w-[95%] items-center justify-between'>
