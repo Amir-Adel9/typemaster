@@ -76,6 +76,14 @@ export const userRouter = router({
         data: { level: { increment: 1 } },
       });
     }),
+  increaseLevelExp: publicProcedure
+    .input(z.object({ id: z.string(), levelExp: z.number() }))
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.user.update({
+        where: { id: input.id },
+        data: { levelExp: input.levelExp },
+      });
+    }),
   uploadImage: publicProcedure
     .input(z.object({ id: z.string(), imageBase64: z.string() }))
     .mutation(async ({ input, ctx }) => {

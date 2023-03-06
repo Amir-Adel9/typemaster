@@ -63,9 +63,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     const storedDisplayName = localStorage.getItem('displayName') as string;
     const storedTheme = localStorage.getItem('selectedTheme') as string;
-    const storedLevelExp = JSON.parse(
-      localStorage.getItem('levelExp') as string
-    );
 
     const isRegistered = storedDisplayName ? true : false;
     if (!isRegistered) {
@@ -75,7 +72,7 @@ const Home: NextPage = () => {
       setDisplayName(
         storedDisplayName.charAt(0).toUpperCase() + storedDisplayName.slice(1)
       );
-      setLevelExp(storedLevelExp);
+      setLevelExp(currentUserData?.levelExp as number);
       if (!storedTheme) {
         setSelectedTheme(themes[0] as string);
       } else {
@@ -117,12 +114,19 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (levelExp) {
-      localStorage.setItem('levelExp', JSON.stringify(levelExp));
+      setLevelExp(levelExp);
+      increaseLevelExpMutation.mutate({
+        id: currentUserData?.id as string,
+        levelExp: levelExp,
+      });
     }
     if (levelExp >= 100) {
       increaseLevelMutation.mutate(currentUserData?.id as string);
-      localStorage.setItem('levelExp', JSON.stringify(levelExp));
       setLevelExp(0);
+      increaseLevelExpMutation.mutate({
+        id: currentUserData?.id as string,
+        levelExp: levelExp,
+      });
     }
   }, [levelExp]);
 
@@ -154,6 +158,19 @@ const Home: NextPage = () => {
   const ctx = trpc.useContext();
 
   const allUsersData = trpc.user.getAllUsersData.useQuery();
+
+  const userData = allUsersData.data?.map((user) => {
+    return {
+      id: user.id,
+      displayName: user.displayName,
+      timesPlayed: user.timesPlayed,
+      imageURL: user.imageURL,
+      wins: user.wins,
+      level: user.level,
+      levelExp: user.levelExp,
+    };
+  });
+
   const currentUserData = allUsersData.data?.find((user) => {
     if (user.displayName === displayName) {
       return user;
@@ -169,16 +186,8 @@ const Home: NextPage = () => {
   const increaseLevelMutation = trpc.user.increaseLevel.useMutation({
     onSuccess: () => ctx.user.invalidate(),
   });
-  const userData = allUsersData.data?.map((user) => {
-    return {
-      id: user.id,
-      displayName: user.displayName,
-      timesPlayed: user.timesPlayed,
-      imageURL: user.imageURL,
-      wins: user.wins,
-      level: user.level,
-      levelExp: user.levelExp,
-    };
+  const increaseLevelExpMutation = trpc.user.increaseLevelExp.useMutation({
+    onSuccess: () => ctx.user.invalidate(),
   });
 
   const currentWordHandler = () => {
@@ -261,10 +270,10 @@ const Home: NextPage = () => {
     setGameStarted(true);
     setIsPlaying(true);
     setIsInstructionsMode(false);
+    setIsShowing(false);
     startButtonRef.current?.classList.add('hidden');
     inputRef.current.value = '';
     increaseTimesPlayedMutation.mutate(currentUserData?.id as string);
-
     currentWordHandler();
     setTimeLeft(difficulty?.timeLimit as number);
     setGameResult('');
@@ -374,14 +383,13 @@ const Home: NextPage = () => {
               isShowingDropdownHandler={setIsShowingDropDown}
               isShowingThemeHandler={setThemeIsShowing}
               score={score}
-              levelExp={levelExp}
-              level={currentUserData?.level as number}
               splittedCurrentWord={splittedCurrentWord}
               startButtonRef={startButtonRef}
               themeIsShowing={themeIsShowing}
               timeLeft={timeLeft}
               wordRef={wordRef}
-              userData={currentUserData!}
+              currentUserData={currentUserData!}
+              levelExp={levelExp}
               words={words}
             />
           )}

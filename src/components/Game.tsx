@@ -19,13 +19,16 @@ interface GameProps {
       wordCount: number;
     }>
   >;
-  userData: {
+  currentUserData: {
     displayName: string;
     id: string;
     imageURL: string;
+    level: number;
+    levelExp: number;
     timesPlayed: number;
     wins: number;
   };
+  levelExp: number;
   gameStarted: boolean;
   isGameOver: boolean;
   isLoading: boolean;
@@ -35,8 +38,6 @@ interface GameProps {
   correct: number;
   incorrect: number;
   accuracy: number;
-  levelExp: number;
-  level: number;
   score: number;
   isInstructionsMode: boolean;
   isShowingDropDown: boolean;
@@ -122,7 +123,9 @@ const Game = (props: GameProps) => {
         <span className='h-12 w-12 overflow-hidden rounded-full border-2 border-primary'>
           <Image
             src={
-              props.userData?.imageURL ? props.userData?.imageURL : '/user.svg'
+              props.currentUserData?.imageURL
+                ? props.currentUserData?.imageURL
+                : '/user.svg'
             }
             alt=''
             width={100}
@@ -130,12 +133,12 @@ const Game = (props: GameProps) => {
             className='h-full w-full duration-300 ease-in-out'
           />
         </span>
-
-        <b>{props.userData?.displayName}</b>
-        <b>Times Played: {props.userData.timesPlayed}</b>
-        <b>Wins: {props.userData.wins}</b>
-        <b>Lvl. {props.level}</b>
-
+        <div className='my-5 flex flex-col items-center'>
+          <b>{props.currentUserData?.displayName}</b>
+          <b>Times Played: {props.currentUserData.timesPlayed}</b>
+          <b>Wins: {props.currentUserData.wins}</b>
+        </div>
+        <b className='mb-1'>Lvl. {props.currentUserData.level}</b>
         <div className='relative h-3 w-[25%] rounded-full bg-gray-200 text-center'>
           <span className='absolute left-[45%] z-20 text-xs font-bold leading-none text-black'>
             {props.levelExp?.toFixed(1)}%
