@@ -56,7 +56,7 @@ interface GameProps {
 const Game = (props: GameProps) => {
   return (
     <div
-      className='relative flex h-[70%] w-[70%] flex-col items-center justify-center rounded-2xl bg-[#111] duration-700'
+      className='relative flex h-[70%] w-[70%] flex-col items-center justify-center rounded-2xl bg-[#111] text-xs text-white duration-700 md:text-base'
       ref={props.gameBodyRef}
     >
       <div className='absolute top-3 left-3 flex w-24 justify-evenly'>
@@ -83,10 +83,14 @@ const Game = (props: GameProps) => {
           currentThemeHandler={props.currentThemeHandler}
         />
       </div>
-      <b className='absolute top-20 text-3xl text-white '>{props.gameResult}</b>
+      <b className='absolute top-20 text-2xl sm:text-3xl '>
+        {props.gameResult}
+      </b>
       <b
         className={`select-none text-center font-mono font-semibold duration-200 ${
-          props.isPlaying ? 'text-8xl' : 'absolute top-[25%] text-5xl'
+          props.isPlaying
+            ? 'text-4xl md:text-7xl'
+            : 'absolute top-[25%] text-4xl sm:text-5xl'
         }`}
         ref={props.wordRef}
       >
@@ -97,7 +101,7 @@ const Game = (props: GameProps) => {
         ))}
       </b>
       <div
-        className={`mt-5 flex w-full flex-wrap justify-center rounded-lg  p-4 text-center font-poppins text-base font-medium ${
+        className={`mt-5 flex w-full flex-wrap justify-center rounded-lg text-center font-poppins font-medium text-black ${
           props.isGameOver ? 'hidden' : ''
         }`}
       >
@@ -108,7 +112,7 @@ const Game = (props: GameProps) => {
         ) : (
           props.words.map((word: string) => {
             return (
-              <b key={word} className=' ] m-1 rounded-md bg-primary p-[10px]'>
+              <b key={word} className='m-1 rounded-md bg-primary p-[10px]'>
                 {word}
               </b>
             );
@@ -116,11 +120,11 @@ const Game = (props: GameProps) => {
         )}
       </div>
       <div
-        className={`flex w-full flex-col items-center justify-center text-white ${
+        className={`flex w-full flex-col items-center justify-center ${
           !props.isGameOver ? 'hidden' : ''
         }`}
       >
-        <span className='h-12 w-12 overflow-hidden rounded-full border-2 border-primary'>
+        <span className='mt-4 h-12 w-12 overflow-hidden rounded-full border-2 border-primary'>
           <Image
             src={
               props.currentUserData?.imageURL
@@ -133,10 +137,10 @@ const Game = (props: GameProps) => {
             className='h-full w-full duration-300 ease-in-out'
           />
         </span>
-        <div className='my-5 flex flex-col items-center'>
+        <div className='my-2 flex flex-col items-center sm:my-4'>
           <b>{props.currentUserData?.displayName}</b>
-          <b>Times Played: {props.currentUserData.timesPlayed}</b>
-          <b>Wins: {props.currentUserData.wins}</b>
+          <b>Times Played: {props.currentUserData?.timesPlayed}</b>
+          <b>Wins: {props.currentUserData?.wins}</b>
         </div>
         <b className='mb-1'>Lvl. {props.currentUserData.level}</b>
         <div className='relative h-3 w-[25%] rounded-full bg-gray-200 text-center'>
@@ -150,13 +154,13 @@ const Game = (props: GameProps) => {
         </div>
       </div>
       <button
-        className='absolute bottom-20 mt-5 hidden w-[50%] rounded-md bg-primary  p-5 font-mono text-2xl font-bold duration-300 hover:scale-[1.04] hover:bg-hovered'
+        className='absolute bottom-16 hidden w-[50%] rounded-md bg-primary p-3 font-mono text-xl font-bold text-black duration-300 hover:scale-[1.04] hover:bg-hovered sm:p-5 sm:text-2xl'
         onClick={props.gameStartHandler}
         ref={props.startButtonRef}
       >
         Start Playing
       </button>
-      <div className='absolute bottom-0 flex w-full justify-between rounded-lg p-4 text-center text-white '>
+      <div className='absolute bottom-0 flex w-full justify-between rounded-lg p-4 text-center'>
         <b>
           Time Left:{' '}
           <span className='text-primary'>
