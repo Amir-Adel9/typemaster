@@ -10,7 +10,7 @@ interface DifficultyDropdownProps {
 const DifficultyDropdown = (props: DifficultyDropdownProps) => {
   return (
     <div
-      className={`absolute left-8 top-7 cursor-pointer border border-primary bg-primary font-mono ${
+      className={`absolute left-8 top-7 cursor-pointer border border-primary bg-primary font-mono text-black ${
         !props.isActive ? 'hidden' : ''
       }`}
     >

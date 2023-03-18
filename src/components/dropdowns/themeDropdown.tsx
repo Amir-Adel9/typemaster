@@ -8,7 +8,7 @@ interface ThemeDropDownProps {
 const ThemeDropdown = (props: ThemeDropDownProps) => {
   return (
     <div
-      className={`absolute left-16 top-7 cursor-pointer border border-primary bg-primary font-mono ${
+      className={`absolute left-16 top-7 cursor-pointer border border-primary bg-primary font-mono text-black ${
         !props.isActive ? 'hidden' : ''
       }`}
     >
