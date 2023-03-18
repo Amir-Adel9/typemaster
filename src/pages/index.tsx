@@ -80,7 +80,6 @@ const Home: NextPage = () => {
     if (user.displayName === displayName) {
       return user;
     }
-    console.log('tr');
   });
 
   const increaseTimesPlayedMutation = trpc.user.increaseTimesPlayed.useMutation(
@@ -148,7 +147,6 @@ const Home: NextPage = () => {
   }, [gameResult]);
 
   useEffect(() => {
-    console.log('lvl', levelExp);
     if (levelExp) {
       increaseLevelExpMutation.mutate({
         id: currentUserData?.id as string,

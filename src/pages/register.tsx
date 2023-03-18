@@ -130,9 +130,8 @@ const Home: NextPage = () => {
             </div>
           </form>
         </div>
-
         <div
-          className='absolute bottom-5 flex translate-y-24 items-center duration-1000 ease-out'
+          className='absolute bottom-8 flex translate-y-24 items-center duration-1000 ease-out'
           ref={iconsRef}
         >
           <Link
@@ -176,6 +175,14 @@ const Home: NextPage = () => {
             }}
           />
         </div>
+        <a
+          href='https://amiradel.vercel.app/'
+          className='absolute bottom-1 text-white hover:underline'
+          rel='noopener noreferrer'
+          target={'_blank'}
+        >
+          amiradel.vercel.app
+        </a>
       </main>
     </>
   );
