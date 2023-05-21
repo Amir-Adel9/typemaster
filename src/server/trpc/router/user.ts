@@ -88,7 +88,6 @@ export const userRouter = router({
     .input(z.object({ id: z.string(), imageBase64: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const imageData = await uploadImage(input.imageBase64);
-      console.log('data', imageData);
       await ctx.prisma.user.update({
         where: { id: input.id },
         data: { imageURL: imageData.secure_url },
